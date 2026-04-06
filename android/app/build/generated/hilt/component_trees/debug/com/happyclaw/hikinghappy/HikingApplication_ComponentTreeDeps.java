@@ -22,6 +22,7 @@ import hilt_aggregated_deps._com_happyclaw_hikinghappy_MainActivity_GeneratedInj
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_di_DatabaseModule;
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_di_RepositoryModule;
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_di_ServiceModule;
+import hilt_aggregated_deps._com_happyclaw_hikinghappy_service_RecordingService_GeneratedInjector;
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_ui_screens_instruments_InstrumentsViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_ui_screens_instruments_InstrumentsViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._com_happyclaw_hikinghappy_ui_screens_settings_SettingsViewModel_HiltModules_BindsModule;
@@ -73,6 +74,7 @@ import hilt_aggregated_deps._dagger_hilt_android_internal_modules_HiltWrapper_Ac
         _com_happyclaw_hikinghappy_di_DatabaseModule.class,
         _com_happyclaw_hikinghappy_di_RepositoryModule.class,
         _com_happyclaw_hikinghappy_di_ServiceModule.class,
+        _com_happyclaw_hikinghappy_service_RecordingService_GeneratedInjector.class,
         _com_happyclaw_hikinghappy_ui_screens_instruments_InstrumentsViewModel_HiltModules_BindsModule.class,
         _com_happyclaw_hikinghappy_ui_screens_instruments_InstrumentsViewModel_HiltModules_KeyModule.class,
         _com_happyclaw_hikinghappy_ui_screens_settings_SettingsViewModel_HiltModules_BindsModule.class,

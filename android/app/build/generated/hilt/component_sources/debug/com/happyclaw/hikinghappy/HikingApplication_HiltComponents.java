@@ -3,6 +3,7 @@ package com.happyclaw.hikinghappy;
 import com.happyclaw.hikinghappy.di.DatabaseModule;
 import com.happyclaw.hikinghappy.di.RepositoryModule;
 import com.happyclaw.hikinghappy.di.ServiceModule;
+import com.happyclaw.hikinghappy.service.RecordingService_GeneratedInjector;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel_HiltModules;
@@ -150,7 +151,8 @@ public final class HikingApplication_HiltComponents {
 
   @Subcomponent
   @ServiceScoped
-  public abstract static class ServiceC implements ServiceComponent,
+  public abstract static class ServiceC implements RecordingService_GeneratedInjector,
+      ServiceComponent,
       GeneratedComponent {
     @Subcomponent.Builder
     abstract interface Builder extends ServiceComponentBuilder {

@@ -15,6 +15,8 @@ import com.happyclaw.hikinghappy.di.DatabaseModule_ProvideActivityRecordDaoFacto
 import com.happyclaw.hikinghappy.di.DatabaseModule_ProvideDatabaseFactory;
 import com.happyclaw.hikinghappy.di.ServiceModule_ProvideFusedLocationClientFactory;
 import com.happyclaw.hikinghappy.service.LocationSensorService;
+import com.happyclaw.hikinghappy.service.RecordingService;
+import com.happyclaw.hikinghappy.service.RecordingService_MembersInjector;
 import com.happyclaw.hikinghappy.service.SyncService;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules;
@@ -470,7 +472,7 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel 
-          return (T) new InstrumentsViewModel(singletonCImpl.activityRepositoryImplProvider.get(), singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.locationSensorServiceProvider.get());
+          return (T) new InstrumentsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.locationSensorServiceProvider.get());
 
           case 1: // com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel 
           return (T) new SettingsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.syncServiceProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
@@ -551,6 +553,18 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
 
     }
+
+    @Override
+    public void injectRecordingService(RecordingService recordingService) {
+      injectRecordingService2(recordingService);
+    }
+
+    private RecordingService injectRecordingService2(RecordingService instance) {
+      RecordingService_MembersInjector.injectLocationSensorService(instance, singletonCImpl.locationSensorServiceProvider.get());
+      RecordingService_MembersInjector.injectActivityRepository(instance, singletonCImpl.activityRepositoryImplProvider.get());
+      RecordingService_MembersInjector.injectPreferencesRepository(instance, singletonCImpl.userPreferencesRepositoryImplProvider.get());
+      return instance;
+    }
   }
 
   private static final class SingletonCImpl extends HikingApplication_HiltComponents.SingletonC {
@@ -558,15 +572,15 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     private final SingletonCImpl singletonCImpl = this;
 
-    private Provider<HikingDatabase> provideDatabaseProvider;
-
-    private Provider<ActivityRepositoryImpl> activityRepositoryImplProvider;
-
     private Provider<UserPreferencesRepositoryImpl> userPreferencesRepositoryImplProvider;
 
     private Provider<FusedLocationProviderClient> provideFusedLocationClientProvider;
 
     private Provider<LocationSensorService> locationSensorServiceProvider;
+
+    private Provider<HikingDatabase> provideDatabaseProvider;
+
+    private Provider<ActivityRepositoryImpl> activityRepositoryImplProvider;
 
     private Provider<SyncService> syncServiceProvider;
 
@@ -582,12 +596,12 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
-      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<HikingDatabase>(singletonCImpl, 1));
-      this.activityRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ActivityRepositoryImpl>(singletonCImpl, 0));
-      this.userPreferencesRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<UserPreferencesRepositoryImpl>(singletonCImpl, 2));
-      this.provideFusedLocationClientProvider = DoubleCheck.provider(new SwitchingProvider<FusedLocationProviderClient>(singletonCImpl, 4));
-      this.locationSensorServiceProvider = DoubleCheck.provider(new SwitchingProvider<LocationSensorService>(singletonCImpl, 3));
-      this.syncServiceProvider = DoubleCheck.provider(new SwitchingProvider<SyncService>(singletonCImpl, 5));
+      this.userPreferencesRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<UserPreferencesRepositoryImpl>(singletonCImpl, 0));
+      this.provideFusedLocationClientProvider = DoubleCheck.provider(new SwitchingProvider<FusedLocationProviderClient>(singletonCImpl, 2));
+      this.locationSensorServiceProvider = DoubleCheck.provider(new SwitchingProvider<LocationSensorService>(singletonCImpl, 1));
+      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<HikingDatabase>(singletonCImpl, 5));
+      this.activityRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ActivityRepositoryImpl>(singletonCImpl, 4));
+      this.syncServiceProvider = DoubleCheck.provider(new SwitchingProvider<SyncService>(singletonCImpl, 3));
     }
 
     @Override
@@ -623,23 +637,23 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.happyclaw.hikinghappy.data.repository.ActivityRepositoryImpl 
-          return (T) new ActivityRepositoryImpl(singletonCImpl.activityRecordDao());
-
-          case 1: // com.happyclaw.hikinghappy.data.local.HikingDatabase 
-          return (T) DatabaseModule_ProvideDatabaseFactory.provideDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
-
-          case 2: // com.happyclaw.hikinghappy.data.repository.UserPreferencesRepositoryImpl 
+          case 0: // com.happyclaw.hikinghappy.data.repository.UserPreferencesRepositoryImpl 
           return (T) new UserPreferencesRepositoryImpl(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 3: // com.happyclaw.hikinghappy.service.LocationSensorService 
+          case 1: // com.happyclaw.hikinghappy.service.LocationSensorService 
           return (T) new LocationSensorService(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.provideFusedLocationClientProvider.get());
 
-          case 4: // com.google.android.gms.location.FusedLocationProviderClient 
+          case 2: // com.google.android.gms.location.FusedLocationProviderClient 
           return (T) ServiceModule_ProvideFusedLocationClientFactory.provideFusedLocationClient(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 5: // com.happyclaw.hikinghappy.service.SyncService 
+          case 3: // com.happyclaw.hikinghappy.service.SyncService 
           return (T) new SyncService(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.activityRepositoryImplProvider.get());
+
+          case 4: // com.happyclaw.hikinghappy.data.repository.ActivityRepositoryImpl 
+          return (T) new ActivityRepositoryImpl(singletonCImpl.activityRecordDao());
+
+          case 5: // com.happyclaw.hikinghappy.data.local.HikingDatabase 
+          return (T) DatabaseModule_ProvideDatabaseFactory.provideDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           default: throw new AssertionError(id);
         }

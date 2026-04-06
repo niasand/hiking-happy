@@ -19,6 +19,7 @@ color text_primary
 color text_secondary
 color text_tertiary
 color warning
+drawable ic_notification
 mipmap ic_launcher
 string about
 string acquiring_gps
