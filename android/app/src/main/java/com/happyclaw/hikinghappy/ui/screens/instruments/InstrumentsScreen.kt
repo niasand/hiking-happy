@@ -314,7 +314,7 @@ private fun LocationInput(
         modifier = Modifier.fillMaxWidth(),
         placeholder = {
             Text(
-                text = "Enter location...",
+                text = "活动地点",
                 fontSize = 14.sp,
                 color = HHColors.TextTertiary
             )

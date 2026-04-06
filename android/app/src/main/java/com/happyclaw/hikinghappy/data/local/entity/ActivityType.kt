@@ -6,13 +6,11 @@ import kotlinx.serialization.Serializable
 enum class ActivityType {
     HIKING,
     WALKING,
-    CYCLING,
-    RUNNING;
+    CYCLING;
 
     fun displayName(): String = when (this) {
         HIKING -> "Hiking"
         WALKING -> "Walking"
         CYCLING -> "Cycling"
-        RUNNING -> "Running"
     }
 }
