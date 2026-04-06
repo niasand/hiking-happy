@@ -1,5 +1,6 @@
 package com.happyclaw.hikinghappy.ui.screens.instruments;
 
+import android.content.Context;
 import com.happyclaw.hikinghappy.data.repository.TrackRepository;
 import com.happyclaw.hikinghappy.domain.UserPreferencesRepository;
 import com.happyclaw.hikinghappy.service.LocationSensorService;
@@ -11,7 +12,7 @@ import javax.annotation.processing.Generated;
 import javax.inject.Provider;
 
 @ScopeMetadata
-@QualifierMetadata
+@QualifierMetadata("dagger.hilt.android.qualifiers.ApplicationContext")
 @DaggerGenerated
 @Generated(
     value = "dagger.internal.codegen.ComponentProcessor",
@@ -33,29 +34,33 @@ public final class InstrumentsViewModel_Factory implements Factory<InstrumentsVi
 
   private final Provider<TrackRepository> trackRepositoryProvider;
 
+  private final Provider<Context> contextProvider;
+
   public InstrumentsViewModel_Factory(
       Provider<UserPreferencesRepository> preferencesRepositoryProvider,
       Provider<LocationSensorService> locationSensorServiceProvider,
-      Provider<TrackRepository> trackRepositoryProvider) {
+      Provider<TrackRepository> trackRepositoryProvider, Provider<Context> contextProvider) {
     this.preferencesRepositoryProvider = preferencesRepositoryProvider;
     this.locationSensorServiceProvider = locationSensorServiceProvider;
     this.trackRepositoryProvider = trackRepositoryProvider;
+    this.contextProvider = contextProvider;
   }
 
   @Override
   public InstrumentsViewModel get() {
-    return newInstance(preferencesRepositoryProvider.get(), locationSensorServiceProvider.get(), trackRepositoryProvider.get());
+    return newInstance(preferencesRepositoryProvider.get(), locationSensorServiceProvider.get(), trackRepositoryProvider.get(), contextProvider.get());
   }
 
   public static InstrumentsViewModel_Factory create(
       Provider<UserPreferencesRepository> preferencesRepositoryProvider,
       Provider<LocationSensorService> locationSensorServiceProvider,
-      Provider<TrackRepository> trackRepositoryProvider) {
-    return new InstrumentsViewModel_Factory(preferencesRepositoryProvider, locationSensorServiceProvider, trackRepositoryProvider);
+      Provider<TrackRepository> trackRepositoryProvider, Provider<Context> contextProvider) {
+    return new InstrumentsViewModel_Factory(preferencesRepositoryProvider, locationSensorServiceProvider, trackRepositoryProvider, contextProvider);
   }
 
   public static InstrumentsViewModel newInstance(UserPreferencesRepository preferencesRepository,
-      LocationSensorService locationSensorService, TrackRepository trackRepository) {
-    return new InstrumentsViewModel(preferencesRepository, locationSensorService, trackRepository);
+      LocationSensorService locationSensorService, TrackRepository trackRepository,
+      Context context) {
+    return new InstrumentsViewModel(preferencesRepository, locationSensorService, trackRepository, context);
   }
 }

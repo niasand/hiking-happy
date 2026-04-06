@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.happyclaw.hikinghappy.data.local.entity.ActivityRecord
+import com.happyclaw.hikinghappy.data.local.entity.ActivityType
 import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
 import com.happyclaw.hikinghappy.data.repository.ActivityRepository
 import com.happyclaw.hikinghappy.data.repository.TrackRepository
@@ -23,6 +24,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class RecordingService : Service() {
 
+    companion object {
+        const val ACTION_START_RECORDING = "com.happyclaw.hikinghappy.START_RECORDING"
+        const val ACTION_STOP_RECORDING = "com.happyclaw.hikinghappy.STOP_RECORDING"
+        const val EXTRA_ACTIVITY_TYPE = "activity_type"
+        const val EXTRA_LOCATION = "location"
+
+        var isRecording = false
+            private set
+    }
+
     @Inject lateinit var locationSensorService: LocationSensorService
     @Inject lateinit var activityRepository: ActivityRepository
     @Inject lateinit var trackRepository: TrackRepository
@@ -38,46 +49,80 @@ class RecordingService : Service() {
     private var currentSpeed: Double = 0.0
     private var startTime: Long = 0L
 
-    // Cached preferences (avoid DataStore reads on every GPS tick)
-    private var cachedActivityType = com.happyclaw.hikinghappy.data.local.entity.ActivityType.HIKING
+    // Cached preferences
+    private var cachedActivityType = ActivityType.HIKING
     private var cachedLocation = ""
 
     // Track recording state
     private var currentSessionId: Long = -1L
     private val trackPointBatch = CopyOnWriteArrayList<TrackPoint>()
-    private var lastBatchFlushTime = 0L
 
     override fun onCreate() {
         super.onCreate()
-        startTime = System.currentTimeMillis()
         RecordingNotification.createChannel(this)
+    }
 
-        // Start a track session
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START_RECORDING -> {
+                if (!isRecording) {
+                    val activityType = intent.getStringExtra(EXTRA_ACTIVITY_TYPE)?.let {
+                        try { ActivityType.valueOf(it) } catch (_: Exception) { ActivityType.HIKING }
+                    } ?: ActivityType.HIKING
+                    val location = intent.getStringExtra(EXTRA_LOCATION) ?: ""
+                    startRecording(activityType, location)
+                }
+            }
+            ACTION_STOP_RECORDING -> {
+                if (isRecording) {
+                    stopRecording()
+                }
+            }
+        }
+        return START_NOT_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun startRecording(activityType: ActivityType, location: String) {
+        isRecording = true
+        startTime = System.currentTimeMillis()
+        cachedActivityType = activityType
+        cachedLocation = location
+
+        // Start foreground with initial notification
+        val notification = RecordingNotification.build(
+            context = this,
+            altitude = Double.NaN,
+            speed = 0.0,
+            durationSec = 0L
+        )
+        startForeground(RecordingNotification.NOTIFICATION_ID, notification)
+
+        // Create track session
         serviceScope.launch {
             currentSessionId = trackRepository.startSession(
-                activityType = cachedActivityType,
-                location = cachedLocation.takeIf { it.isNotBlank() }
+                activityType = activityType,
+                location = location.takeIf { it.isNotBlank() }
             )
-            lastBatchFlushTime = System.currentTimeMillis()
         }
 
-        // Observe preferences
+        // Observe preferences for live updates
         serviceScope.launch {
             combine(
                 preferencesRepository.activityType,
                 preferencesRepository.location
-            ) { type, location ->
-                type to location
-            }.collect { (type, location) ->
-                cachedActivityType = type
-                cachedLocation = location
-            }
+            ) { type, loc -> type to loc }
+                .collect { (type, loc) ->
+                    cachedActivityType = type
+                    cachedLocation = loc
+                }
         }
 
         // Start GPS recording
         locationJob = serviceScope.launch {
             locationSensorService.locationUpdates.collect { update ->
-                if (update != null) {
+                if (update != null && isRecording) {
                     processLocationUpdate(update)
                 }
             }
@@ -100,34 +145,29 @@ class RecordingService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Create initial notification and start foreground
-        val notification = RecordingNotification.build(
-            context = this,
-            altitude = Double.NaN,
-            speed = 0.0,
-            durationSec = 0L
-        )
-        startForeground(RecordingNotification.NOTIFICATION_ID, notification)
-        return START_STICKY
-    }
+    private fun stopRecording() {
+        isRecording = false
 
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onDestroy() {
-        super.onDestroy()
         // Final flush
         serviceScope.launch { flushTrackPointBatch() }
+
         // Finalize session
         serviceScope.launch {
             if (currentSessionId > 0) {
                 trackRepository.finalizeSession(currentSessionId)
+                currentSessionId = -1L
             }
         }
+
+        // Cancel coroutines
         locationJob?.cancel()
         notificationJob?.cancel()
         flushJob?.cancel()
+        trackPointBatch.clear()
+
+        // Stop foreground and service
         stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
     }
 
     private fun processLocationUpdate(update: LocationUpdate) {
@@ -138,8 +178,8 @@ class RecordingService : Service() {
             else -> GpsSignalState.ACTIVE
         }
 
-        // Speed dead zone filter: < 0.278 m/s (1 km/h) -> 0
-        val filteredSpeed = if (update.speed < 0.278f) 0.0 else update.speed.toDouble()
+        // Speed dead zone filter: < 0.5 m/s (1.8 km/h) -> 0
+        val filteredSpeed = if (update.speed < 0.5f) 0.0 else update.speed.toDouble()
 
         currentAltitude = update.altitude
         currentSpeed = filteredSpeed
@@ -179,19 +219,18 @@ class RecordingService : Service() {
     private suspend fun flushTrackPointBatch() {
         if (currentSessionId <= 0 || trackPointBatch.isEmpty()) return
 
-        // Snapshot and clear
         val toFlush = trackPointBatch.toList()
         trackPointBatch.clear()
 
         try {
             trackRepository.addTrackPoints(toFlush)
         } catch (e: Exception) {
-            // Re-add failed points to batch for retry
             trackPointBatch.addAll(0, toFlush)
         }
     }
 
     private fun updateNotification() {
+        if (!isRecording) return
         val durationSec = (System.currentTimeMillis() - startTime) / 1000
         val notification = RecordingNotification.build(
             context = this,
@@ -201,5 +240,12 @@ class RecordingService : Service() {
         )
         val manager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
         manager.notify(RecordingNotification.NOTIFICATION_ID, notification)
+    }
+
+    override fun onDestroy() {
+        if (isRecording) {
+            stopRecording()
+        }
+        super.onDestroy()
     }
 }

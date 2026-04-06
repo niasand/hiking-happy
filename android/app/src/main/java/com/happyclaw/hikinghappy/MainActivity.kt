@@ -1,14 +1,9 @@
 package com.happyclaw.hikinghappy
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,11 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.happyclaw.hikinghappy.service.RecordingService
 import com.happyclaw.hikinghappy.ui.navigation.AppNavigation
 import com.happyclaw.hikinghappy.ui.navigation.Screen
 import com.happyclaw.hikinghappy.ui.theme.HHColors
@@ -65,21 +58,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var notificationPermissionGranted = false
-
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        notificationPermissionGranted = granted
-        if (granted) {
-            startRecordingService()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        checkAndStartRecording()
         setContent {
             HikingHappyTheme {
                 MainContent()
@@ -89,32 +70,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopService(Intent(this, RecordingService::class.java))
-    }
-
-    private fun checkAndStartRecording() {
-        // Check notification permission (Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                notificationPermissionGranted = true
-                startRecordingService()
-            } else {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        } else {
-            startRecordingService()
-        }
-    }
-
-    private fun startRecordingService() {
-        val intent = Intent(this, RecordingService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
+        // Service lifecycle is controlled by user (start/stop buttons)
     }
 }
 

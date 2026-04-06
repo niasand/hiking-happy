@@ -1,5 +1,8 @@
 package com.happyclaw.hikinghappy.ui.screens.instruments
 
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
@@ -10,8 +13,12 @@ import com.happyclaw.hikinghappy.domain.model.GpsSignalState
 import com.happyclaw.hikinghappy.domain.model.InstrumentState
 import com.happyclaw.hikinghappy.service.LocationUpdate
 import com.happyclaw.hikinghappy.service.LocationSensorService
+import com.happyclaw.hikinghappy.service.RecordingService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +34,8 @@ import javax.inject.Inject
 class InstrumentsViewModel @Inject constructor(
     private val preferencesRepository: UserPreferencesRepository,
     private val locationSensorService: LocationSensorService,
-    private val trackRepository: TrackRepository
+    private val trackRepository: TrackRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InstrumentState())
@@ -35,6 +43,10 @@ class InstrumentsViewModel @Inject constructor(
 
     // Speed smoothing buffer (3-sample moving average)
     private val speedBuffer = mutableListOf<Double>()
+
+    // Recording duration timer
+    private var recordingTimerJob: Job? = null
+    private var recordingStartTime: Long = 0L
 
     // Track points for the active session — exposed to UI
     val trackPoints: StateFlow<List<TrackPoint>> = trackRepository.getAllSessions()
@@ -90,6 +102,9 @@ class InstrumentsViewModel @Inject constructor(
         _state.value = _state.value.copy(
             hasBarometer = locationSensorService.hasBarometer
         )
+
+        // Sync recording state from static flag
+        _state.value = _state.value.copy(isRecording = RecordingService.isRecording)
     }
 
     private fun processLocationUpdate(update: LocationUpdate) {
@@ -101,7 +116,6 @@ class InstrumentsViewModel @Inject constructor(
         }
 
         // Speed dead zone filter: < 0.5 m/s (1.8 km/h) -> 0
-        // GPS drift can produce phantom speeds up to ~0.5 m/s when stationary
         val filteredSpeed = if (update.speed < 0.5f) 0.0 else update.speed.toDouble()
 
         // 3-sample moving average for display
@@ -123,6 +137,49 @@ class InstrumentsViewModel @Inject constructor(
             latitude = update.latitude,
             longitude = update.longitude
         )
+    }
+
+    fun startRecording() {
+        val state = _state.value
+        val intent = Intent(context, RecordingService::class.java).apply {
+            action = RecordingService.ACTION_START_RECORDING
+            putExtra(RecordingService.EXTRA_ACTIVITY_TYPE, state.activityType.name)
+            putExtra(RecordingService.EXTRA_LOCATION, state.location)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+
+        recordingStartTime = System.currentTimeMillis()
+        _state.value = _state.value.copy(
+            isRecording = true,
+            recordingDurationSec = 0L
+        )
+        startRecordingTimer()
+    }
+
+    fun stopRecording() {
+        val intent = Intent(context, RecordingService::class.java).apply {
+            action = RecordingService.ACTION_STOP_RECORDING
+        }
+        context.startService(intent)
+
+        _state.value = _state.value.copy(isRecording = false)
+        recordingTimerJob?.cancel()
+        recordingTimerJob = null
+    }
+
+    private fun startRecordingTimer() {
+        recordingTimerJob?.cancel()
+        recordingTimerJob = viewModelScope.launch {
+            while (true) {
+                delay(1000L)
+                val elapsed = (System.currentTimeMillis() - recordingStartTime) / 1000
+                _state.value = _state.value.copy(recordingDurationSec = elapsed)
+            }
+        }
     }
 
     fun setActivityType(type: ActivityType) {

@@ -26,14 +26,19 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +67,7 @@ fun InstrumentsScreen(
     GpsPermissionHandler {
         val state by viewModel.state.collectAsStateWithLifecycle()
         val trackPoints by viewModel.trackPoints.collectAsStateWithLifecycle()
+        var showStopConfirm by remember { mutableStateOf(false) }
 
         if (state.isGpsAcquiring && state.altitude.isNaN()) {
             Column(
@@ -70,7 +76,13 @@ fun InstrumentsScreen(
                     .background(HHColors.Background)
                     .keepScreenOn()
             ) {
-                TopAppBar(onSettingsClick = onSettingsClick)
+                TopAppBar(
+                    isRecording = state.isRecording,
+                    recordingDurationSec = state.recordingDurationSec,
+                    onStartClick = { viewModel.startRecording() },
+                    onStopClick = { showStopConfirm = true },
+                    onSettingsClick = onSettingsClick
+                )
                 AcquiringGpsState()
             }
             return@GpsPermissionHandler
@@ -83,7 +95,13 @@ fun InstrumentsScreen(
                 .keepScreenOn()
                 .imePadding()
         ) {
-            TopAppBar(onSettingsClick = onSettingsClick)
+            TopAppBar(
+                isRecording = state.isRecording,
+                recordingDurationSec = state.recordingDurationSec,
+                onStartClick = { viewModel.startRecording() },
+                onStopClick = { showStopConfirm = true },
+                onSettingsClick = onSettingsClick
+            )
 
             // Top section: altitude & speed cards (scrollable)
             Column(
@@ -184,13 +202,55 @@ fun InstrumentsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+
+        // Stop recording confirmation dialog
+        if (showStopConfirm) {
+            AlertDialog(
+                onDismissRequest = { showStopConfirm = false },
+                containerColor = HHColors.Surface,
+                shape = RoundedCornerShape(16.dp),
+                title = {
+                    Text(
+                        text = "Stop Recording",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = HHColors.TextPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Are you sure you want to stop? The current track will be saved.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = HHColors.TextSecondary
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showStopConfirm = false
+                        viewModel.stopRecording()
+                    }) {
+                        Text("Stop", color = HHColors.Error, fontWeight = FontWeight.SemiBold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showStopConfirm = false }) {
+                        Text("Cancel", color = HHColors.TextSecondary)
+                    }
+                }
+            )
+        }
     }
 }
 
 // --- Top App Bar ---
 
 @Composable
-private fun TopAppBar(onSettingsClick: () -> Unit) {
+private fun TopAppBar(
+    isRecording: Boolean,
+    recordingDurationSec: Long,
+    onStartClick: () -> Unit,
+    onStopClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -202,10 +262,65 @@ private fun TopAppBar(onSettingsClick: () -> Unit) {
     ) {
         Text(
             text = "HikingHappy",
-            style = androidx.compose.material3.MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge,
             color = HHColors.TextPrimary
         )
+
         Spacer(modifier = Modifier.weight(1f))
+
+        // Recording indicator
+        if (isRecording) {
+            // Red dot
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(Color.Red)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = formatRecordingDuration(recordingDurationSec),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily.Monospace,
+                color = Color.Red
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            // Stop button
+            IconButton(
+                onClick = onStopClick,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.Red.copy(alpha = 0.15f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.Red)
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+        } else {
+            // Start button
+            IconButton(
+                onClick = onStartClick,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color.Red.copy(alpha = 0.15f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(14.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red)
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+
         IconButton(
             onClick = onSettingsClick,
             modifier = Modifier
@@ -219,6 +334,14 @@ private fun TopAppBar(onSettingsClick: () -> Unit) {
             )
         }
     }
+}
+
+private fun formatRecordingDuration(seconds: Long): String {
+    val h = seconds / 3600
+    val m = (seconds % 3600) / 60
+    val s = seconds % 60
+    return if (h > 0) "%d:%02d:%02d".format(h, m, s)
+    else "%02d:%02d".format(m, s)
 }
 
 // --- Instrument Card (altitude or speed) ---
@@ -354,7 +477,7 @@ private fun LocationInput(
             unfocusedTextColor = HHColors.TextPrimary
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
+        textStyle = androidx.compose.ui.text.Style(fontSize = 14.sp)
     )
 }
 

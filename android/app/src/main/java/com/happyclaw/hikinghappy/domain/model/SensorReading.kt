@@ -25,7 +25,9 @@ data class InstrumentState(
     val speedUnitIndex: Int = 0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val locationRefreshCounter: Int = 0
+    val locationRefreshCounter: Int = 0,
+    val isRecording: Boolean = false,
+    val recordingDurationSec: Long = 0L
 ) {
     fun getAltitudeUnit(): AltitudeUnit = if (altitudeUnitIndex == 0) AltitudeUnit.METERS else AltitudeUnit.FEET
     fun getSpeedUnit(): SpeedUnit = if (speedUnitIndex == 0) SpeedUnit.KMH else SpeedUnit.MPH
