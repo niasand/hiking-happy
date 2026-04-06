@@ -268,22 +268,6 @@ private fun TopAppBar(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Settings button
-        IconButton(
-            onClick = onSettingsClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-        ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                tint = HHColors.TextSecondary
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
         // Recording indicator
         if (isRecording) {
             // Red dot
@@ -333,6 +317,22 @@ private fun TopAppBar(
                         .background(Color.Red)
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        // Settings button
+        IconButton(
+            onClick = onSettingsClick,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings",
+                tint = HHColors.TextSecondary
+            )
         }
     }
 }
