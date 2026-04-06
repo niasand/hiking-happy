@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleStartEffect
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
@@ -20,10 +22,14 @@ import com.amap.api.maps.MapView
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.MarkerOptions
-import com.amap.api.maps.model.MyLocationStyle
 
 private const val TAG = "AmapView"
 
+/**
+ * Amap map using native SDK MapView.
+ * IMPORTANT: Do NOT enable isMyLocationEnabled — we use Google FusedLocationProvider,
+ * not Amap LocationClient. Enabling it without AmapLocationClient causes blank screen.
+ */
 @SuppressLint("MissingPermission")
 @Composable
 fun AmapView(
@@ -32,7 +38,6 @@ fun AmapView(
     hasFix: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var aMap by remember { mutableStateOf<AMap?>(null) }
 
@@ -47,30 +52,27 @@ fun AmapView(
                 mapView = mv
                 mv.onCreate(Bundle())
                 aMap = mv.map.apply {
-                    // Blue dot for current location
-                    myLocationStyle = MyLocationStyle().apply {
-                        myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER)
-                        strokeColor(0x00000000) // transparent stroke
-                        radiusFillColor(0x4D2196F3) // semi-transparent blue fill
-                    }
-                    isMyLocationEnabled = true
                     uiSettings.isMyLocationButtonEnabled = false
                     uiSettings.isScrollGesturesEnabled = true
                     uiSettings.isZoomGesturesEnabled = true
-                    Log.d(TAG, "Native MapView created successfully")
+                    // Default center: Beijing, will move on GPS fix
+                    moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(39.90923, 116.397428), 16f))
                 }
+                Log.d(TAG, "Native MapView created, map=${aMap != null}")
             }
         },
         modifier = modifier
     )
 
-    // Move camera when GPS updates
+    // Move camera + marker when GPS updates
     LaunchedEffect(hasFix, latitude, longitude) {
         if (hasFix && latitude != 0.0 && longitude != 0.0) {
-            val map = aMap ?: return@LaunchedEffect
+            val map = aMap ?: run {
+                Log.w(TAG, "AMap is null, skipping camera move")
+                return@LaunchedEffect
+            }
             val latLng = LatLng(latitude, longitude)
             Log.d(TAG, "Moving camera to: $latitude, $longitude")
-            // Clear old markers and add new one
             map.clear()
             map.addMarker(
                 MarkerOptions()
@@ -82,11 +84,20 @@ fun AmapView(
         }
     }
 
-    // Lifecycle management
-    DisposableEffect(Unit) {
+    // Proper lifecycle management with LifecycleStartEffect
+    LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
+        Log.d(TAG, "MapView onResume")
+        onStopOrDispose {
+            mapView?.onPause()
+            Log.d(TAG, "MapView onPause")
+        }
+    }
+
+    // Destroy on composable removal
+    DisposableEffect(Unit) {
         onDispose {
-            Log.d(TAG, "MapView disposing")
+            Log.d(TAG, "MapView onDestroy")
             mapView?.onDestroy()
         }
     }
