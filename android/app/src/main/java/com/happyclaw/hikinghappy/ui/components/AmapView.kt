@@ -2,7 +2,6 @@ package com.happyclaw.hikinghappy.ui.components
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -11,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -23,12 +21,10 @@ import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.MarkerOptions
 
-private const val TAG = "AmapView"
-
 /**
  * Amap map using native SDK MapView.
- * IMPORTANT: Do NOT enable isMyLocationEnabled — we use Google FusedLocationProvider,
- * not Amap LocationClient. Enabling it without AmapLocationClient causes blank screen.
+ * Note: isMyLocationEnabled is intentionally NOT used — we rely on Google
+ * FusedLocationProvider for position, and display it via manual Marker.
  */
 @SuppressLint("MissingPermission")
 @Composable
@@ -55,10 +51,8 @@ fun AmapView(
                     uiSettings.isMyLocationButtonEnabled = false
                     uiSettings.isScrollGesturesEnabled = true
                     uiSettings.isZoomGesturesEnabled = true
-                    // Default center: Beijing, will move on GPS fix
                     moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(39.90923, 116.397428), 16f))
                 }
-                Log.e(TAG, ">>> Native MapView created, map=${aMap != null}")
             }
         },
         modifier = modifier
@@ -67,12 +61,8 @@ fun AmapView(
     // Move camera + marker when GPS updates
     LaunchedEffect(hasFix, latitude, longitude) {
         if (hasFix && latitude != 0.0 && longitude != 0.0) {
-            val map = aMap ?: run {
-                Log.e(TAG, ">>> AMap is null, skipping camera move")
-                return@LaunchedEffect
-            }
+            val map = aMap ?: return@LaunchedEffect
             val latLng = LatLng(latitude, longitude)
-            Log.e(TAG, ">>> Moving camera to: $latitude, $longitude")
             map.clear()
             map.addMarker(
                 MarkerOptions()
@@ -84,20 +74,17 @@ fun AmapView(
         }
     }
 
-    // Proper lifecycle management with LifecycleStartEffect
+    // Lifecycle: onResume / onPause tied to RESUMED state
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
-        Log.e(TAG, ">>> MapView onResume")
         onStopOrDispose {
             mapView?.onPause()
-            Log.e(TAG, ">>> MapView onPause")
         }
     }
 
-    // Destroy on composable removal
+    // Lifecycle: onDestroy on composable removal
     DisposableEffect(Unit) {
         onDispose {
-            Log.e(TAG, ">>> MapView onDestroy")
             mapView?.onDestroy()
         }
     }
