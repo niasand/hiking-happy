@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#F5F7FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_elevated">#F0F2F5</color>
+    <color name="text_primary">#1A1D23</color>
+    <color name="text_secondary">#5C6370</color>
+    <color name="text_tertiary">#9CA3AF</color>
+    <color name="accent_altitude">#4ECB71</color>
+    <color name="accent_speed">#4AA8D8</color>
+    <color name="accent_active">#4ECB71</color>
+    <color name="warning">#D97706</color>
+    <color name="error">#DC2626</color>
+    <color name="success">#16A34A</color>
+    <color name="info">#2563EB</color>
+    <color name="gps_active">#4ECB71</color>
+    <color name="gps_weak">#D97706</color>
+    <color name="gps_poor">#DC2626</color>
+    <color name="gps_lost">#6B7280</color>
+</resources>

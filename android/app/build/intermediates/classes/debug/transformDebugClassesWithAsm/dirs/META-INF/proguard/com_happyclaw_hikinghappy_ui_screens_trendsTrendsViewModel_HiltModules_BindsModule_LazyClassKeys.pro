@@ -1,0 +1,5 @@
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel

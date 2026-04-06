@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel
