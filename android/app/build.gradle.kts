@@ -20,6 +20,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // Load Amap API key from local.properties
+        val amapKey = project.findProperty("AMAP_API_KEY") ?: ""
+        buildConfigField("String", "AMAP_API_KEY", "\"$amapKey\"")
+
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -50,6 +54,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

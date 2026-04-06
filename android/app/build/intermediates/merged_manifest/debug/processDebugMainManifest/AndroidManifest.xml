@@ -45,10 +45,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HikingHappy" >
 
-        <!-- Amap API Key -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="337e994b1e8a588f856f05c589f6c51b" />
+        <!-- Amap API Key (loaded from local.properties via BuildConfig) -->
 
         <activity
             android:name="com.happyclaw.hikinghappy.MainActivity"
