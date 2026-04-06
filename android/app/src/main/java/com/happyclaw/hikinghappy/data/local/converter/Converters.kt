@@ -8,5 +8,10 @@ class Converters {
     fun fromActivityType(value: ActivityType): String = value.name
 
     @TypeConverter
-    fun toActivityType(value: String): ActivityType = ActivityType.valueOf(value)
+    fun toActivityType(value: String): ActivityType =
+        try {
+            ActivityType.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            ActivityType.HIKING
+        }
 }
