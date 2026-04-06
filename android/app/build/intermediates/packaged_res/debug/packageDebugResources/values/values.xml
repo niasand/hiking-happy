@@ -9,8 +9,8 @@
     <color name="gps_lost">#6B7280</color>
     <color name="gps_poor">#DC2626</color>
     <color name="gps_weak">#D97706</color>
-    <color name="ic_launcher_background">#F5F7FA</color>
-    <color name="ic_launcher_foreground">#4ECB71</color>
+    <color name="ic_launcher_background">#FF8C00</color>
+    <color name="ic_launcher_foreground">#FFFFFF</color>
     <color name="info">#2563EB</color>
     <color name="success">#16A34A</color>
     <color name="surface">#FFFFFF</color>
