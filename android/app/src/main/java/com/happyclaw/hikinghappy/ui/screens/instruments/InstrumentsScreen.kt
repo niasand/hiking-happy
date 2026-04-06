@@ -81,10 +81,9 @@ fun InstrumentsScreen(
         ) {
             TopAppBar(onSettingsClick = onSettingsClick)
 
+            // Top section: altitude & speed cards (scrollable)
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -115,47 +114,55 @@ fun InstrumentsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+            }
 
-                // Map
-                Box(
+            // Map — fixed, NOT inside scrollable container
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 16.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(1.dp, HHColors.BorderSubtle, RoundedCornerShape(12.dp))
+            ) {
+                AmapView(
+                    latitude = state.latitude,
+                    longitude = state.longitude,
+                    hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
+                    refreshTrigger = state.locationRefreshCounter,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp)
+                        .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))
-                        .border(1.dp, HHColors.BorderSubtle, RoundedCornerShape(12.dp))
-                ) {
-                    AmapView(
-                        latitude = state.latitude,
-                        longitude = state.longitude,
-                        hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
-                        refreshTrigger = state.locationRefreshCounter,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(12.dp))
-                    )
+                )
 
-                    // Locate button — bottom-right
-                    IconButton(
-                        onClick = { viewModel.refreshLocation() },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 8.dp, bottom = 8.dp)
-                            .size(36.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                                shape = CircleShape
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.MyLocation,
-                            contentDescription = "Locate",
-                            tint = androidx.compose.ui.graphics.Color.Red,
-                            modifier = Modifier.size(20.dp)
+                // Locate button — bottom-right
+                IconButton(
+                    onClick = { viewModel.refreshLocation() },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 8.dp, bottom = 8.dp)
+                        .size(36.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            shape = CircleShape
                         )
-                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MyLocation,
+                        contentDescription = "Locate",
+                        tint = androidx.compose.ui.graphics.Color.Red,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            // Bottom section: location input & activity type
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
 
                 LocationInput(
                     location = state.location,
