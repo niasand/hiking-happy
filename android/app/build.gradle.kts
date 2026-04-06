@@ -7,6 +7,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Read Amap API key from local.properties at top level
+val localPropertiesFile = rootProject.file("local.properties")
+val amapApiKey = if (localPropertiesFile.exists()) {
+    localPropertiesFile.readText().lines()
+        .map { it.split("=") }
+        .filter { it.size == 2 && it[0].trim() == "AMAP_API_KEY" }
+        .map { it[1].trim() }
+        .firstOrNull() ?: ""
+} else ""
+
 android {
     namespace = "com.happyclaw.hikinghappy"
     compileSdk = 35
@@ -20,9 +30,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Load Amap API key from local.properties
-        val amapKey = project.findProperty("AMAP_API_KEY") ?: ""
-        buildConfigField("String", "AMAP_API_KEY", "\"$amapKey\"")
+        // Amap API key from local.properties
+        buildConfigField("String", "AMAP_API_KEY", "\"$amapApiKey\"")
+        manifestPlaceholders["AMAP_API_KEY"] = amapApiKey
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -107,7 +117,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Amap (高德地图)
-    implementation("com.amap.api:3dmap:latest.integration")
+    implementation("com.amap.api:3dmap:10.0.600")
 
     // Core
     implementation("androidx.core:core-ktx:1.15.0")
