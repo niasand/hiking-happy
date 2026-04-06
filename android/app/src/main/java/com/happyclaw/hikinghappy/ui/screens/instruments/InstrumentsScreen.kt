@@ -477,7 +477,7 @@ private fun LocationInput(
             unfocusedTextColor = HHColors.TextPrimary
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        textStyle = androidx.compose.ui.text.Style(fontSize = 14.sp)
+        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
     )
 }
 

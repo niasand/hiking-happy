@@ -488,7 +488,7 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
           return (T) new HistoryViewModel(singletonCImpl.bindTrackRepositoryProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 1: // com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel 
-          return (T) new InstrumentsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.locationSensorServiceProvider.get(), singletonCImpl.bindTrackRepositoryProvider.get());
+          return (T) new InstrumentsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.locationSensorServiceProvider.get(), singletonCImpl.bindTrackRepositoryProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 2: // com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel 
           return (T) new SettingsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.syncServiceProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
