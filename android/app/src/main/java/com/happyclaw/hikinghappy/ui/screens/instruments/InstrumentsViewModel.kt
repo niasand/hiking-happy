@@ -100,19 +100,23 @@ class InstrumentsViewModel @Inject constructor(
             else -> GpsSignalState.ACTIVE
         }
 
-        // Speed dead zone filter: < 0.278 m/s (1 km/h) -> 0
-        val filteredSpeed = if (update.speed < 0.278f) 0.0 else update.speed.toDouble()
+        // Speed dead zone filter: < 0.5 m/s (1.8 km/h) -> 0
+        // GPS drift can produce phantom speeds up to ~0.5 m/s when stationary
+        val filteredSpeed = if (update.speed < 0.5f) 0.0 else update.speed.toDouble()
 
         // 3-sample moving average for display
         speedBuffer.add(filteredSpeed)
         if (speedBuffer.size > 3) speedBuffer.removeAt(0)
         val smoothedSpeed = speedBuffer.average()
 
+        // Final zero-out: if smoothed speed is below threshold, show exactly 0
+        val displaySpeed = if (smoothedSpeed < 0.5) 0.0 else smoothedSpeed
+
         // Update UI state only — recording is handled by RecordingService
         _state.value = _state.value.copy(
             altitude = update.altitude,
             speed = filteredSpeed,
-            displaySpeed = smoothedSpeed,
+            displaySpeed = displaySpeed,
             gpsState = gpsState,
             hasBarometer = update.hasBarometer,
             isGpsAcquiring = false,
