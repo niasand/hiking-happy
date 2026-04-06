@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsScreen
 import com.happyclaw.hikinghappy.ui.screens.history.HistoryScreen
+import com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewScreen
 import com.happyclaw.hikinghappy.ui.screens.settings.SettingsScreen
 import com.happyclaw.hikinghappy.ui.screens.trends.TrendsScreen
 
@@ -109,7 +110,47 @@ fun AppNavigation(
                 )
             }
         ) {
-            HistoryScreen(onBackClick = onNavigateBack)
+            HistoryScreen(
+                onBackClick = onNavigateBack,
+                onTrackClick = { sessionId ->
+                    navController.navigate(Screen.TrackPreview.createRoute(sessionId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.TrackPreview.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("sessionId") {
+                    type = androidx.navigation.NavType.LongType
+                }
+            ),
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(250)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(300)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(250)
+                )
+            }
+        ) {
+            TrackPreviewScreen(onBackClick = onNavigateBack)
         }
     }
 }

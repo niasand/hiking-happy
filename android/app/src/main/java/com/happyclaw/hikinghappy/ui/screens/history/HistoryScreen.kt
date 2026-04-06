@@ -52,7 +52,8 @@ import java.util.Locale
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onTrackClick: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -138,6 +139,7 @@ fun HistoryScreen(
                     items(state.sessions, key = { it.id }) { session ->
                         TrackSessionRow(
                             session = session,
+                            onClick = { onTrackClick(session.id) },
                             onExportClick = { viewModel.exportSession(session.id) }
                         )
                     }
@@ -158,6 +160,7 @@ fun HistoryScreen(
 @Composable
 private fun TrackSessionRow(
     session: TrackSession,
+    onClick: () -> Unit,
     onExportClick: () -> Unit
 ) {
     val dateFormat = SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
@@ -173,6 +176,7 @@ private fun TrackSessionRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(HHColors.Surface)
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier

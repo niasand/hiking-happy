@@ -42,6 +42,7 @@ fun AmapView(
     hasFix: Boolean,
     refreshTrigger: Int = 0,
     trackPoints: List<TrackPoint> = emptyList(),
+    fitTrack: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
@@ -144,6 +145,15 @@ fun AmapView(
                 .width(6f)
                 .color(0xFF4ECB71.toInt())
         )
+
+        // Auto-fit camera to show entire track
+        if (fitTrack && latLngs.size >= 2) {
+            val bounds = com.amap.api.maps.model.LatLngBounds.builder()
+                .includes(latLngs)
+                .build()
+            val padding = 80
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+        }
     }
 
     // Lifecycle
