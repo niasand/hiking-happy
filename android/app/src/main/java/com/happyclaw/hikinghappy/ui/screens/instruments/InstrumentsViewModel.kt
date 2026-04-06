@@ -112,4 +112,10 @@ class InstrumentsViewModel @Inject constructor(
             preferencesRepository.setLocation(location)
         }
     }
+
+    /** Request a fresh GPS fix and bump counter to trigger map re-center */
+    fun refreshLocation() {
+        locationSensorService.requestSingleLocation()
+        _state.value = _state.value.copy(locationRefreshCounter = _state.value.locationRefreshCounter + 1)
+    }
 }

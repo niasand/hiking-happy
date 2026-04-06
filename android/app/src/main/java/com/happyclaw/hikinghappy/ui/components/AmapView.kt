@@ -32,6 +32,7 @@ fun AmapView(
     latitude: Double,
     longitude: Double,
     hasFix: Boolean,
+    refreshTrigger: Int = 0,
     modifier: Modifier = Modifier
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
@@ -58,8 +59,8 @@ fun AmapView(
         modifier = modifier
     )
 
-    // Move camera + marker when GPS updates
-    LaunchedEffect(hasFix, latitude, longitude) {
+    // Move camera + marker when GPS updates or user taps locate button
+    LaunchedEffect(hasFix, latitude, longitude, refreshTrigger) {
         if (hasFix && latitude != 0.0 && longitude != 0.0) {
             val map = aMap ?: return@LaunchedEffect
             val latLng = LatLng(latitude, longitude)

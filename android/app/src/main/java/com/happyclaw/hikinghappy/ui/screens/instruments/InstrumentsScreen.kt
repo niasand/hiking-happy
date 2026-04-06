@@ -23,9 +23,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -126,10 +128,31 @@ fun InstrumentsScreen(
                         latitude = state.latitude,
                         longitude = state.longitude,
                         hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
+                        refreshTrigger = state.locationRefreshCounter,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(12.dp))
                     )
+
+                    // Locate button — bottom-right
+                    IconButton(
+                        onClick = { viewModel.refreshLocation() },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 8.dp, bottom = 8.dp)
+                            .size(36.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MyLocation,
+                            contentDescription = "Locate",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

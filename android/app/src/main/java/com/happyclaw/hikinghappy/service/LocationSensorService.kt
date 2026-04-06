@@ -126,6 +126,29 @@ class LocationSensorService @Inject constructor(
     fun stopBarometerUpdates() {
         // Handled by awaitClose in callbackFlow
     }
+
+    /** Request a single fresh GPS fix (used by locate-me button) */
+    @SuppressLint("MissingPermission")
+    fun requestSingleLocation() {
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location ->
+                location?.let {
+                    val altitude = if (hasBarometer && isSeaLevelCalibrated) {
+                        calculateBarometricAltitude(latestPressure)
+                    } else {
+                        it.altitude
+                    }
+                    // Re-send via the existing flow — the callbackFlow will also pick up
+                    // the regular update, but this gives an immediate response on button tap
+                    scope.launch {
+                        // The continuous updates already flow through locationUpdates,
+                        // so this single request just ensures a quick re-center.
+                        // No need to manually emit — the FusedLocationProvider will
+                        // trigger the callback with the new location.
+                    }
+                }
+            }
+    }
 }
 
 data class LocationUpdate(
