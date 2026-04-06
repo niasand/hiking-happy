@@ -7,7 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-// Read Amap API key from local.properties at top level
+// Read Amap API key from local.properties
 val localPropertiesFile = rootProject.file("local.properties")
 val amapApiKey = if (localPropertiesFile.exists()) {
     localPropertiesFile.readText().lines()
@@ -30,9 +30,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Amap API key from local.properties
+        // Amap API key (used by WebView JS API)
         buildConfigField("String", "AMAP_API_KEY", "\"$amapApiKey\"")
-        manifestPlaceholders["AMAP_API_KEY"] = amapApiKey
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -116,8 +115,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    // Amap (高德地图)
-    implementation("com.amap.api:3dmap:10.0.600")
+    // Amap JS (loaded via WebView, no native SDK needed)
 
     // Core
     implementation("androidx.core:core-ktx:1.15.0")
