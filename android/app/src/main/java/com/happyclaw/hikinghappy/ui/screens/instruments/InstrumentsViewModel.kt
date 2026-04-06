@@ -3,23 +3,31 @@ package com.happyclaw.hikinghappy.ui.screens.instruments
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
+import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
+import com.happyclaw.hikinghappy.data.repository.TrackRepository
 import com.happyclaw.hikinghappy.domain.UserPreferencesRepository
 import com.happyclaw.hikinghappy.domain.model.GpsSignalState
 import com.happyclaw.hikinghappy.domain.model.InstrumentState
 import com.happyclaw.hikinghappy.service.LocationUpdate
 import com.happyclaw.hikinghappy.service.LocationSensorService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class InstrumentsViewModel @Inject constructor(
     private val preferencesRepository: UserPreferencesRepository,
-    private val locationSensorService: LocationSensorService
+    private val locationSensorService: LocationSensorService,
+    private val trackRepository: TrackRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InstrumentState())
@@ -27,6 +35,18 @@ class InstrumentsViewModel @Inject constructor(
 
     // Speed smoothing buffer (3-sample moving average)
     private val speedBuffer = mutableListOf<Double>()
+
+    // Track points for the active session — exposed to UI
+    val trackPoints: StateFlow<List<TrackPoint>> = trackRepository.getAllSessions()
+        .flatMapLatest { sessions ->
+            val activeSession = sessions.firstOrNull { it.endTime == null }
+            if (activeSession != null) {
+                trackRepository.getPointsForSession(activeSession.id)
+            } else {
+                kotlinx.coroutines.flow.flowOf(emptyList())
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         // Observe user preferences (activity type, location, units)

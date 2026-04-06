@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.happyclaw.hikinghappy.data.local.HikingDatabase
+import com.happyclaw.hikinghappy.data.local.MIGRATION_1_2
 import com.happyclaw.hikinghappy.data.local.dao.ActivityRecordDao
+import com.happyclaw.hikinghappy.data.local.dao.TrackPointDao
+import com.happyclaw.hikinghappy.data.local.dao.TrackSessionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,12 +28,22 @@ object DatabaseModule {
             "hiking_database"
         )
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 
     @Provides
     fun provideActivityRecordDao(database: HikingDatabase): ActivityRecordDao {
         return database.activityRecordDao()
+    }
+
+    @Provides
+    fun provideTrackSessionDao(database: HikingDatabase): TrackSessionDao {
+        return database.trackSessionDao()
+    }
+
+    @Provides
+    fun provideTrackPointDao(database: HikingDatabase): TrackPointDao {
+        return database.trackPointDao()
     }
 }

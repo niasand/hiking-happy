@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
+import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
 import com.happyclaw.hikinghappy.domain.model.GpsSignalState
 import com.happyclaw.hikinghappy.ui.components.AcquiringGpsState
 import com.happyclaw.hikinghappy.ui.components.AmapView
@@ -60,6 +61,7 @@ fun InstrumentsScreen(
 ) {
     GpsPermissionHandler {
         val state by viewModel.state.collectAsStateWithLifecycle()
+        val trackPoints by viewModel.trackPoints.collectAsStateWithLifecycle()
 
         if (state.isGpsAcquiring && state.altitude.isNaN()) {
             Column(
@@ -132,6 +134,7 @@ fun InstrumentsScreen(
                     longitude = state.longitude,
                     hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
                     refreshTrigger = state.locationRefreshCounter,
+                    trackPoints = trackPoints,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))

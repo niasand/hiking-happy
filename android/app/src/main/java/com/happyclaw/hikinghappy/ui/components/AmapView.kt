@@ -21,6 +21,8 @@ import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
+import com.amap.api.maps.model.PolylineOptions
+import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -39,11 +41,13 @@ fun AmapView(
     longitude: Double,
     hasFix: Boolean,
     refreshTrigger: Int = 0,
+    trackPoints: List<TrackPoint> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var aMap by remember { mutableStateOf<AMap?>(null) }
     var currentMarker by remember { mutableStateOf<Marker?>(null) }
+    var currentPolyline by remember { mutableStateOf<com.amap.api.maps.model.Polyline?>(null) }
     var hasCameraPositioned by remember { mutableStateOf(false) }
     // Track last marker position to avoid unnecessary updates
     var lastMarkerLat by remember { mutableStateOf(0.0) }
@@ -111,6 +115,37 @@ fun AmapView(
         }
     }
 
+    // Draw/update polyline for track points
+    LaunchedEffect(trackPoints.size, trackPoints.lastOrNull()?.id) {
+        val map = aMap ?: return@LaunchedEffect
+        if (trackPoints.isEmpty()) {
+            currentPolyline?.remove()
+            currentPolyline = null
+            return@LaunchedEffect
+        }
+
+        // Downsample to max 1000 points if needed
+        val points = if (trackPoints.size > 1000) {
+            val step = trackPoints.size.toDouble() / 1000
+            (0 until 1000).map { i ->
+                trackPoints[(i * step).toInt().coerceAtMost(trackPoints.size - 1)]
+            }
+        } else {
+            trackPoints
+        }
+
+        val latLngs = points.map { LatLng(it.latitude, it.longitude) }
+
+        // Remove old polyline and add new one
+        currentPolyline?.remove()
+        currentPolyline = map.addPolyline(
+            PolylineOptions()
+                .addAll(latLngs)
+                .width(6f)
+                .color(0xFF4ECB71.toInt())
+        )
+    }
+
     // Lifecycle
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
@@ -120,6 +155,7 @@ fun AmapView(
     DisposableEffect(Unit) {
         onDispose {
             currentMarker = null
+            currentPolyline = null
             mapView?.onDestroy()
         }
     }

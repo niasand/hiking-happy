@@ -1,0 +1,35 @@
+package com.happyclaw.hikinghappy.data.repository
+
+import com.happyclaw.hikinghappy.data.local.entity.ActivityType
+import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
+import com.happyclaw.hikinghappy.data.local.entity.TrackSession
+import kotlinx.coroutines.flow.Flow
+
+interface TrackRepository {
+
+    /**
+     * Create a new track session. Returns the session ID.
+     */
+    suspend fun startSession(activityType: ActivityType, location: String?): Long
+
+    /**
+     * Batch insert track points for a session. Returns inserted row IDs.
+     */
+    suspend fun addTrackPoints(points: List<TrackPoint>): List<Long>
+
+    /**
+     * Finalize a session: compute stats (distance, duration, max altitude/speed, point count)
+     * and update the session record.
+     */
+    suspend fun finalizeSession(sessionId: Long)
+
+    /**
+     * Observe all sessions, newest first.
+     */
+    fun getAllSessions(): Flow<List<TrackSession>>
+
+    /**
+     * Observe track points for a session, ordered by timestamp ASC.
+     */
+    fun getPointsForSession(sessionId: Long): Flow<List<TrackPoint>>
+}

@@ -2,6 +2,8 @@ package com.happyclaw.hikinghappy.di
 
 import com.happyclaw.hikinghappy.data.repository.ActivityRepository
 import com.happyclaw.hikinghappy.data.repository.ActivityRepositoryImpl
+import com.happyclaw.hikinghappy.data.repository.TrackRepository
+import com.happyclaw.hikinghappy.data.repository.TrackRepositoryImpl
 import com.happyclaw.hikinghappy.data.repository.UserPreferencesRepositoryImpl
 import com.happyclaw.hikinghappy.domain.UserPreferencesRepository
 import dagger.Binds
@@ -17,6 +19,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindActivityRepository(impl: ActivityRepositoryImpl): ActivityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTrackRepository(impl: TrackRepositoryImpl): TrackRepository
 
     @Binds
     @Singleton
