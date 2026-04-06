@@ -7,6 +7,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
+import com.amap.api.maps.CoordinateConverter
+import com.amap.api.maps.model.LatLng
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -62,14 +64,21 @@ class LocationSensorService @Inject constructor(
                     calibrateSeaLevel(location.altitude, latestPressure)
                 }
 
+                // Convert WGS84 (Google GPS) to GCJ-02 (Amap coordinate system)
+                val converter = CoordinateConverter(context)
+                val gcj = converter
+                    .from(CoordinateConverter.CoordType.GPS)
+                    .coord(LatLng(location.latitude, location.longitude))
+                    .convert()
+
                 val update = LocationUpdate(
                     altitude = altitude,
                     speed = if (location.hasSpeed()) location.speed else 0f,
                     accuracy = if (location.hasAccuracy()) location.accuracy else null,
                     gpsAltitude = location.altitude,
                     hasBarometer = hasBarometer,
-                    latitude = location.latitude,
-                    longitude = location.longitude
+                    latitude = gcj.latitude,
+                    longitude = gcj.longitude
                 )
                 trySend(update)
             }
