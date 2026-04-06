@@ -30,6 +30,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // Amap API key injection to AndroidManifest
+        manifestPlaceholders["AMAP_API_KEY"] = amapApiKey
+
         // Amap API key (used by WebView JS API)
         buildConfigField("String", "AMAP_API_KEY", "\"$amapApiKey\"")
 
@@ -115,7 +118,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    // Amap JS (loaded via WebView, no native SDK needed)
+    // Amap Native SDK (3dmap includes location module)
+    implementation("com.amap.api:3dmap:10.0.600")
 
     // Core
     implementation("androidx.core:core-ktx:1.15.0")

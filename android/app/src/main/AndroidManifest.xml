@@ -32,6 +32,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="35">
 
+        <!-- Amap API Key (injected from local.properties via manifestPlaceholders) -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="${AMAP_API_KEY}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -7,14 +7,12 @@ enum class ActivityType {
     HIKING,
     WALKING,
     CYCLING,
-    RUNNING,
-    MOUNTAINEERING;
+    RUNNING;
 
     fun displayName(): String = when (this) {
         HIKING -> "Hiking"
         WALKING -> "Walking"
         CYCLING -> "Cycling"
         RUNNING -> "Running"
-        MOUNTAINEERING -> "Mountaineering"
     }
 }
