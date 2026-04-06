@@ -319,7 +319,7 @@ private fun TopAppBar(
             }
         }
 
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(40.dp))
 
         // Settings button
         IconButton(
