@@ -37,6 +37,8 @@ fun AmapView(
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var aMap by remember { mutableStateOf<AMap?>(null) }
+    // Track whether camera has been positioned at least once
+    var hasCameraPositioned by remember { mutableStateOf(false) }
 
     AndroidView(
         factory = { ctx ->
@@ -59,9 +61,9 @@ fun AmapView(
         modifier = modifier
     )
 
-    // Move camera + marker when GPS updates or user taps locate button
-    LaunchedEffect(hasFix, latitude, longitude, refreshTrigger) {
-        if (hasFix && latitude != 0.0 && longitude != 0.0) {
+    // Update marker position on every GPS fix (no camera move — preserves user zoom)
+    LaunchedEffect(latitude, longitude) {
+        if (latitude != 0.0 && longitude != 0.0) {
             val map = aMap ?: return@LaunchedEffect
             val latLng = LatLng(latitude, longitude)
             map.clear()
@@ -71,6 +73,26 @@ fun AmapView(
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                     .title("My Location")
             )
+        }
+    }
+
+    // Move camera only on first GPS fix or when user taps locate button
+    LaunchedEffect(hasFix, latitude, longitude, refreshTrigger) {
+        if (hasFix && latitude != 0.0 && longitude != 0.0) {
+            val map = aMap ?: return@LaunchedEffect
+            if (!hasCameraPositioned) {
+                hasCameraPositioned = true
+                val latLng = LatLng(latitude, longitude)
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            }
+        }
+    }
+
+    // Re-center camera when user taps locate button
+    LaunchedEffect(refreshTrigger) {
+        if (refreshTrigger > 0 && latitude != 0.0 && longitude != 0.0) {
+            val map = aMap ?: return@LaunchedEffect
+            val latLng = LatLng(latitude, longitude)
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
         }
     }

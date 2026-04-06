@@ -149,7 +149,7 @@ fun InstrumentsScreen(
                         Icon(
                             imageVector = Icons.Filled.MyLocation,
                             contentDescription = "Locate",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = androidx.compose.ui.graphics.Color.Red,
                             modifier = Modifier.size(20.dp)
                         )
                     }
