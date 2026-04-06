@@ -60,7 +60,7 @@
 35-->[androidx.core:core:1.15.0] /Users/zhiwei/.gradle/caches/8.9/transforms/6615dab826aa3e1dadb2ec50f176e928/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
 36
 37    <application
-37-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:25:5-49:19
+37-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:25:5-54:19
 38        android:name="com.happyclaw.hikinghappy.HikingApplication"
 38-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:26:9-42
 39        android:allowBackup="true"
@@ -77,134 +77,143 @@
 45-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:30:9-35
 46        android:theme="@style/Theme.HikingHappy" >
 46-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:31:9-49
-47        <activity
-47-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:34:9-43:20
-48            android:name="com.happyclaw.hikinghappy.MainActivity"
-48-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:35:13-41
-49            android:exported="true"
-49-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:36:13-36
-50            android:screenOrientation="portrait"
-50-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:37:13-49
-51            android:windowSoftInputMode="adjustResize" >
-51-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:38:13-55
-52            <intent-filter>
-52-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:39:13-42:29
-53                <action android:name="android.intent.action.MAIN" />
-53-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:40:17-69
-53-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:40:25-66
-54
-55                <category android:name="android.intent.category.LAUNCHER" />
-55-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:41:17-77
-55-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:41:27-74
-56            </intent-filter>
-57        </activity>
-58
-59        <service
-59-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:45:9-48:40
-60            android:name="com.happyclaw.hikinghappy.service.RecordingService"
-60-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:46:13-53
-61            android:exported="false"
-61-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:48:13-37
-62            android:foregroundServiceType="location" />
-62-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:47:13-53
-63
-64        <activity
-64-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:9-173
-65            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-65-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:19-85
-66            android:exported="false"
-66-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:146-170
-67            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-67-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:86-145
-68
-69        <meta-data
-69-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:9-122
-70            android:name="com.google.android.gms.version"
-70-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:20-65
-71            android:value="@integer/google_play_services_version" />
-71-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:66-119
-72
-73        <activity
-73-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
-74            android:name="androidx.compose.ui.tooling.PreviewActivity"
-74-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
-75            android:exported="true" />
-75-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
-76
-77        <provider
-77-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
-78            android:name="androidx.startup.InitializationProvider"
-78-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
-79            android:authorities="com.happyclaw.hikinghappy.androidx-startup"
-79-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
-80            android:exported="false" >
-80-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
-81            <meta-data
-81-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
-82                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-82-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
-83                android:value="androidx.startup" />
-83-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
-84            <meta-data
-84-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
-85                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-85-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
-86                android:value="androidx.startup" />
-86-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+47
+48        <!-- Amap API Key -->
+49        <meta-data
+49-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:35:9-37:64
+50            android:name="com.amap.api.v2.apikey"
+50-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:36:13-50
+51            android:value="337e994b1e8a588f856f05c589f6c51b" />
+51-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:37:13-61
+52
+53        <activity
+53-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:39:9-48:20
+54            android:name="com.happyclaw.hikinghappy.MainActivity"
+54-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:40:13-41
+55            android:exported="true"
+55-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:41:13-36
+56            android:screenOrientation="portrait"
+56-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:42:13-49
+57            android:windowSoftInputMode="adjustResize" >
+57-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:43:13-55
+58            <intent-filter>
+58-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:44:13-47:29
+59                <action android:name="android.intent.action.MAIN" />
+59-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:45:17-69
+59-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:45:25-66
+60
+61                <category android:name="android.intent.category.LAUNCHER" />
+61-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:46:17-77
+61-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:46:27-74
+62            </intent-filter>
+63        </activity>
+64
+65        <service
+65-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:50:9-53:40
+66            android:name="com.happyclaw.hikinghappy.service.RecordingService"
+66-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:51:13-53
+67            android:exported="false"
+67-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:53:13-37
+68            android:foregroundServiceType="location" />
+68-->/Users/zhiwei/.happyclaw/hiking-happy/android/app/src/main/AndroidManifest.xml:52:13-53
+69
+70        <activity
+70-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:9-173
+71            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+71-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:19-85
+72            android:exported="false"
+72-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:146-170
+73            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+73-->[com.google.android.gms:play-services-base:18.5.0] /Users/zhiwei/.gradle/caches/8.9/transforms/a9d376bf0f60d8c17ecbbc22eea515fd/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:86-145
+74
+75        <meta-data
+75-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:9-122
+76            android:name="com.google.android.gms.version"
+76-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:20-65
+77            android:value="@integer/google_play_services_version" />
+77-->[com.google.android.gms:play-services-basement:18.4.0] /Users/zhiwei/.gradle/caches/8.9/transforms/832ea23367dc07ef900fd458852da815/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:66-119
+78
+79        <activity
+79-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+80            android:name="androidx.compose.ui.tooling.PreviewActivity"
+80-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+81            android:exported="true" />
+81-->[androidx.compose.ui:ui-tooling-android:1.7.6] /Users/zhiwei/.gradle/caches/8.9/transforms/ad71fa362ba2ced7c994ccb81bd8a9ff/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+82
+83        <provider
+83-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+84            android:name="androidx.startup.InitializationProvider"
+84-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+85            android:authorities="com.happyclaw.hikinghappy.androidx-startup"
+85-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+86            android:exported="false" >
+86-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
 87            <meta-data
-87-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
-88                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-88-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+87-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+88                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+88-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
 89                android:value="androidx.startup" />
-89-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
-90        </provider>
-91
-92        <service
-92-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
-93            android:name="androidx.room.MultiInstanceInvalidationService"
-93-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
-94            android:directBootAware="true"
-94-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
-95            android:exported="false" />
-95-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
-96
-97        <receiver
-97-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
-98            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-98-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
-99            android:directBootAware="false"
-99-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
-100            android:enabled="true"
-100-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
-101            android:exported="true"
-101-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
-102            android:permission="android.permission.DUMP" >
-102-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
-103            <intent-filter>
-103-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
-104                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
-105            </intent-filter>
-106            <intent-filter>
-106-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
-107                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-107-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
-107-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
-108            </intent-filter>
+89-->[androidx.emoji2:emoji2:1.3.0] /Users/zhiwei/.gradle/caches/8.9/transforms/b825a20a4b983d6ab07156c3b136babd/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+90            <meta-data
+90-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+91                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+91-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
+92                android:value="androidx.startup" />
+92-->[androidx.lifecycle:lifecycle-process:2.8.7] /Users/zhiwei/.gradle/caches/8.9/transforms/c95cf902dbcfabfd370b9a2718a78121/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+93            <meta-data
+93-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+94                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+94-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+95                android:value="androidx.startup" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+96        </provider>
+97
+98        <service
+98-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+99            android:name="androidx.room.MultiInstanceInvalidationService"
+99-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+100            android:directBootAware="true"
+100-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+101            android:exported="false" />
+101-->[androidx.room:room-runtime:2.6.1] /Users/zhiwei/.gradle/caches/8.9/transforms/b53b5fbc471e1fb06795dd197b51726e/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+102
+103        <receiver
+103-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+104            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+104-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+105            android:directBootAware="false"
+105-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+106            android:enabled="true"
+106-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+107            android:exported="true"
+107-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+108            android:permission="android.permission.DUMP" >
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
 109            <intent-filter>
-109-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
-110                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-110-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
-110-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+109-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+110                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+110-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+110-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
 111            </intent-filter>
 112            <intent-filter>
-112-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
-113                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-113-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
-113-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+112-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+113                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+113-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+113-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
 114            </intent-filter>
-115        </receiver>
-116    </application>
-117
-118</manifest>
+115            <intent-filter>
+115-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+116                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+117            </intent-filter>
+118            <intent-filter>
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+119                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+119-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+119-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/zhiwei/.gradle/caches/8.9/transforms/a1cf930eecfa1fe83e09807f8f0730d3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+120            </intent-filter>
+121        </receiver>
+122    </application>
+123
+124</manifest>

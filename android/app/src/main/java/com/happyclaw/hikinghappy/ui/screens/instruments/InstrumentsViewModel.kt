@@ -95,7 +95,9 @@ class InstrumentsViewModel @Inject constructor(
             displaySpeed = smoothedSpeed,
             gpsState = gpsState,
             hasBarometer = update.hasBarometer,
-            isGpsAcquiring = false
+            isGpsAcquiring = false,
+            latitude = update.latitude,
+            longitude = update.longitude
         )
     }
 

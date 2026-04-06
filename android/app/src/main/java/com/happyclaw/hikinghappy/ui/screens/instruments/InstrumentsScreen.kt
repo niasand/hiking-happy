@@ -52,6 +52,7 @@ import com.happyclaw.hikinghappy.domain.model.AltitudeUnit
 import com.happyclaw.hikinghappy.domain.model.GpsSignalState
 import com.happyclaw.hikinghappy.domain.model.SpeedUnit
 import com.happyclaw.hikinghappy.ui.components.AcquiringGpsState
+import com.happyclaw.hikinghappy.ui.components.AmapView
 import com.happyclaw.hikinghappy.ui.components.GpsPermissionHandler
 import com.happyclaw.hikinghappy.ui.theme.HHColors
 
@@ -130,6 +131,26 @@ fun InstrumentsScreen(
                     displaySize = speedDisplaySize,
                     gpsState = state.gpsState
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Map card
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(1.dp, HHColors.BorderSubtle, RoundedCornerShape(12.dp))
+                ) {
+                    AmapView(
+                        latitude = state.latitude,
+                        longitude = state.longitude,
+                        hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
             }

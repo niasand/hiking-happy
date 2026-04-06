@@ -67,7 +67,9 @@ class LocationSensorService @Inject constructor(
                     speed = if (location.hasSpeed()) location.speed else 0f,
                     accuracy = if (location.hasAccuracy()) location.accuracy else null,
                     gpsAltitude = location.altitude,
-                    hasBarometer = hasBarometer
+                    hasBarometer = hasBarometer,
+                    latitude = location.latitude,
+                    longitude = location.longitude
                 )
                 trySend(update)
             }
@@ -131,5 +133,7 @@ data class LocationUpdate(
     val speed: Float,
     val accuracy: Float?,
     val gpsAltitude: Double,
-    val hasBarometer: Boolean
+    val hasBarometer: Boolean,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )

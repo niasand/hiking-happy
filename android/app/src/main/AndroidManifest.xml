@@ -31,6 +31,11 @@
         android:theme="@style/Theme.HikingHappy"
         tools:targetApi="35">
 
+        <!-- Amap API Key -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="337e994b1e8a588f856f05c589f6c51b" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

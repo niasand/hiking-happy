@@ -22,7 +22,9 @@ data class InstrumentState(
     val altitudeUnitLabel: String = "m",
     val speedUnitLabel: String = "km/h",
     val altitudeUnitIndex: Int = 0,
-    val speedUnitIndex: Int = 0
+    val speedUnitIndex: Int = 0,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 ) {
     fun getAltitudeUnit(): AltitudeUnit = if (altitudeUnitIndex == 0) AltitudeUnit.METERS else AltitudeUnit.FEET
     fun getSpeedUnit(): SpeedUnit = if (speedUnitIndex == 0) SpeedUnit.KMH else SpeedUnit.MPH

@@ -101,6 +101,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
+    // Amap (高德地图)
+    implementation("com.amap.api:3dmap:latest.integration")
+
     // Core
     implementation("androidx.core:core-ktx:1.15.0")
 
