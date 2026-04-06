@@ -66,7 +66,11 @@ fun TrackPreviewScreen(
                 )
             }
             Text(
-                text = state.session?.let { "${it.activityType.displayName()} - ${it.location ?: ""}" } ?: "Track Preview",
+                text = state.session?.let {
+                    val loc = it.location?.takeIf { l -> l.isNotBlank() }
+                    if (loc != null) "${it.activityType.displayName()} - $loc"
+                    else it.activityType.displayName()
+                } ?: "Track Preview",
                 style = MaterialTheme.typography.headlineLarge,
                 color = HHColors.TextPrimary,
                 maxLines = 1
