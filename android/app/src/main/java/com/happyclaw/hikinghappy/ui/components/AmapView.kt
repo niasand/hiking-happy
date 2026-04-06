@@ -58,7 +58,7 @@ fun AmapView(
                     // Default center: Beijing, will move on GPS fix
                     moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(39.90923, 116.397428), 16f))
                 }
-                Log.d(TAG, "Native MapView created, map=${aMap != null}")
+                Log.e(TAG, ">>> Native MapView created, map=${aMap != null}")
             }
         },
         modifier = modifier
@@ -68,11 +68,11 @@ fun AmapView(
     LaunchedEffect(hasFix, latitude, longitude) {
         if (hasFix && latitude != 0.0 && longitude != 0.0) {
             val map = aMap ?: run {
-                Log.w(TAG, "AMap is null, skipping camera move")
+                Log.e(TAG, ">>> AMap is null, skipping camera move")
                 return@LaunchedEffect
             }
             val latLng = LatLng(latitude, longitude)
-            Log.d(TAG, "Moving camera to: $latitude, $longitude")
+            Log.e(TAG, ">>> Moving camera to: $latitude, $longitude")
             map.clear()
             map.addMarker(
                 MarkerOptions()
@@ -87,17 +87,17 @@ fun AmapView(
     // Proper lifecycle management with LifecycleStartEffect
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
-        Log.d(TAG, "MapView onResume")
+        Log.e(TAG, ">>> MapView onResume")
         onStopOrDispose {
             mapView?.onPause()
-            Log.d(TAG, "MapView onPause")
+            Log.e(TAG, ">>> MapView onPause")
         }
     }
 
     // Destroy on composable removal
     DisposableEffect(Unit) {
         onDispose {
-            Log.d(TAG, "MapView onDestroy")
+            Log.e(TAG, ">>> MapView onDestroy")
             mapView?.onDestroy()
         }
     }
