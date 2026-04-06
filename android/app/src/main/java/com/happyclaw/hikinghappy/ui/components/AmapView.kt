@@ -19,6 +19,7 @@ import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
 
 /**
@@ -37,6 +38,7 @@ fun AmapView(
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var aMap by remember { mutableStateOf<AMap?>(null) }
+    var currentMarker by remember { mutableStateOf<Marker?>(null) }
     // Track whether camera has been positioned at least once
     var hasCameraPositioned by remember { mutableStateOf(false) }
 
@@ -66,13 +68,17 @@ fun AmapView(
         if (latitude != 0.0 && longitude != 0.0) {
             val map = aMap ?: return@LaunchedEffect
             val latLng = LatLng(latitude, longitude)
-            map.clear()
-            map.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .title("My Location")
-            )
+            if (currentMarker != null) {
+                // Just update position — no clear/re-add, avoids scroll jank
+                currentMarker!!.position = latLng
+            } else {
+                currentMarker = map.addMarker(
+                    MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .title("My Location")
+                )
+            }
         }
     }
 
@@ -97,7 +103,7 @@ fun AmapView(
         }
     }
 
-    // Lifecycle: onResume / onPause tied to RESUMED state
+    // Lifecycle: onResume / onPause / onDestroy
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
         onStopOrDispose {
@@ -105,9 +111,9 @@ fun AmapView(
         }
     }
 
-    // Lifecycle: onDestroy on composable removal
     DisposableEffect(Unit) {
         onDispose {
+            currentMarker = null
             mapView?.onDestroy()
         }
     }
