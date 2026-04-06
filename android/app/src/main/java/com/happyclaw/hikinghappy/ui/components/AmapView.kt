@@ -21,6 +21,11 @@ import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Amap map using native SDK MapView.
@@ -39,8 +44,10 @@ fun AmapView(
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var aMap by remember { mutableStateOf<AMap?>(null) }
     var currentMarker by remember { mutableStateOf<Marker?>(null) }
-    // Track whether camera has been positioned at least once
     var hasCameraPositioned by remember { mutableStateOf(false) }
+    // Track last marker position to avoid unnecessary updates
+    var lastMarkerLat by remember { mutableStateOf(0.0) }
+    var lastMarkerLon by remember { mutableStateOf(0.0) }
 
     AndroidView(
         factory = { ctx ->
@@ -63,13 +70,18 @@ fun AmapView(
         modifier = modifier
     )
 
-    // Update marker position on every GPS fix (no camera move — preserves user zoom)
+    // Update marker only when position moved > 3 meters (avoids gesture interference)
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
+            val dist = distanceBetween(lastMarkerLat, lastMarkerLon, latitude, longitude)
+            if (dist < 3.0 && currentMarker != null) return@LaunchedEffect
+
             val map = aMap ?: return@LaunchedEffect
             val latLng = LatLng(latitude, longitude)
+            lastMarkerLat = latitude
+            lastMarkerLon = longitude
+
             if (currentMarker != null) {
-                // Just update position — no clear/re-add, avoids scroll jank
                 currentMarker!!.position = latLng
             } else {
                 currentMarker = map.addMarker(
@@ -82,14 +94,12 @@ fun AmapView(
         }
     }
 
-    // Move camera only on first GPS fix or when user taps locate button
-    LaunchedEffect(hasFix, latitude, longitude, refreshTrigger) {
+    // Move camera only on first GPS fix
+    LaunchedEffect(hasFix, latitude, longitude) {
         if (hasFix && latitude != 0.0 && longitude != 0.0) {
-            val map = aMap ?: return@LaunchedEffect
             if (!hasCameraPositioned) {
                 hasCameraPositioned = true
-                val latLng = LatLng(latitude, longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+                aMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f))
             }
         }
     }
@@ -97,18 +107,14 @@ fun AmapView(
     // Re-center camera when user taps locate button
     LaunchedEffect(refreshTrigger) {
         if (refreshTrigger > 0 && latitude != 0.0 && longitude != 0.0) {
-            val map = aMap ?: return@LaunchedEffect
-            val latLng = LatLng(latitude, longitude)
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            aMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f))
         }
     }
 
-    // Lifecycle: onResume / onPause / onDestroy
+    // Lifecycle
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
-        onStopOrDispose {
-            mapView?.onPause()
-        }
+        onStopOrDispose { mapView?.onPause() }
     }
 
     DisposableEffect(Unit) {
@@ -117,4 +123,14 @@ fun AmapView(
             mapView?.onDestroy()
         }
     }
+}
+
+/** Approximate distance in meters between two lat/lon points */
+private fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    if (lat1 == 0.0 && lon1 == 0.0) return Double.MAX_VALUE
+    val R = 6371000.0
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+    return R * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
