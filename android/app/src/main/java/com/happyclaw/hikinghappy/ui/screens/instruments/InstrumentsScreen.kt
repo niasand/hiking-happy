@@ -25,7 +25,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -290,31 +292,31 @@ private fun TopAppBar(
             IconButton(
                 onClick = onStopClick,
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(Color.Red.copy(alpha = 0.15f))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(Color.Red)
-                )
-            }
-        } else {
-            // Start button
-            IconButton(
-                onClick = onStartClick,
-                modifier = Modifier
-                    .size(32.dp)
+                    .size(36.dp)
                     .clip(CircleShape)
                     .background(Color.Red.copy(alpha = 0.15f))
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red)
+                Icon(
+                    imageVector = Icons.Default.Stop,
+                    contentDescription = "Stop Recording",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        } else {
+            // Play/start button
+            IconButton(
+                onClick = onStartClick,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(HHColors.AccentAltitude.copy(alpha = 0.15f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Start Recording",
+                    tint = HHColors.AccentAltitude,
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
