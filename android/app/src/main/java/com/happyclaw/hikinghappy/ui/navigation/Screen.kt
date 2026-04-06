@@ -5,7 +5,7 @@ sealed class Screen(val route: String) {
     data object Trends : Screen("trends")
     data object Settings : Screen("settings")
     data object History : Screen("history")
-    data object TrackPreview(val sessionId: Long = 0) : Screen("track_preview/{sessionId}") {
+    data object TrackPreview : Screen("track_preview/{sessionId}") {
         fun createRoute(id: Long) = "track_preview/$id"
     }
 }

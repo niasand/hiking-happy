@@ -28,6 +28,10 @@ import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel;
 import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules_BindsModule_Binds_LazyMapKey;
 import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules_KeyModule_Provide_LazyMapKey;
+import com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewViewModel;
+import com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewViewModel_HiltModules;
+import com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewViewModel_HiltModules_BindsModule_Binds_LazyMapKey;
+import com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewViewModel_HiltModules_KeyModule_Provide_LazyMapKey;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey;
@@ -400,7 +404,7 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(4).put(HistoryViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, HistoryViewModel_HiltModules.KeyModule.provide()).put(InstrumentsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, InstrumentsViewModel_HiltModules.KeyModule.provide()).put(SettingsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, SettingsViewModel_HiltModules.KeyModule.provide()).put(TrendsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, TrendsViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(5).put(HistoryViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, HistoryViewModel_HiltModules.KeyModule.provide()).put(InstrumentsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, InstrumentsViewModel_HiltModules.KeyModule.provide()).put(SettingsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, SettingsViewModel_HiltModules.KeyModule.provide()).put(TrackPreviewViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, TrackPreviewViewModel_HiltModules.KeyModule.provide()).put(TrendsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, TrendsViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -420,6 +424,8 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
   }
 
   private static final class ViewModelCImpl extends HikingApplication_HiltComponents.ViewModelC {
+    private final SavedStateHandle savedStateHandle;
+
     private final SingletonCImpl singletonCImpl;
 
     private final ActivityRetainedCImpl activityRetainedCImpl;
@@ -432,6 +438,8 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     private Provider<SettingsViewModel> settingsViewModelProvider;
 
+    private Provider<TrackPreviewViewModel> trackPreviewViewModelProvider;
+
     private Provider<TrendsViewModel> trendsViewModelProvider;
 
     private ViewModelCImpl(SingletonCImpl singletonCImpl,
@@ -439,7 +447,7 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
         ViewModelLifecycle viewModelLifecycleParam) {
       this.singletonCImpl = singletonCImpl;
       this.activityRetainedCImpl = activityRetainedCImpl;
-
+      this.savedStateHandle = savedStateHandleParam;
       initialize(savedStateHandleParam, viewModelLifecycleParam);
 
     }
@@ -450,12 +458,13 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
       this.historyViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
       this.instrumentsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
       this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
-      this.trendsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.trackPreviewViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.trendsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(4).put(HistoryViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) historyViewModelProvider)).put(InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) instrumentsViewModelProvider)).put(SettingsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) settingsViewModelProvider)).put(TrendsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) trendsViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(5).put(HistoryViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) historyViewModelProvider)).put(InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) instrumentsViewModelProvider)).put(SettingsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) settingsViewModelProvider)).put(TrackPreviewViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) trackPreviewViewModelProvider)).put(TrendsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) trendsViewModelProvider)).build());
     }
 
     @Override
@@ -493,7 +502,10 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
           case 2: // com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel 
           return (T) new SettingsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.syncServiceProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 3: // com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel 
+          case 3: // com.happyclaw.hikinghappy.ui.screens.history.TrackPreviewViewModel 
+          return (T) new TrackPreviewViewModel(viewModelCImpl.savedStateHandle, singletonCImpl.bindTrackRepositoryProvider.get());
+
+          case 4: // com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel 
           return (T) new TrendsViewModel(singletonCImpl.activityRepositoryImplProvider.get(), singletonCImpl.userPreferencesRepositoryImplProvider.get());
 
           default: throw new AssertionError(id);

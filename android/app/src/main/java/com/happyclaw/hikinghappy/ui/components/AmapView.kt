@@ -148,9 +148,9 @@ fun AmapView(
 
         // Auto-fit camera to show entire track
         if (fitTrack && latLngs.size >= 2) {
-            val bounds = com.amap.api.maps.model.LatLngBounds.builder()
-                .includes(latLngs)
-                .build()
+            val builder = com.amap.api.maps.model.LatLngBounds.builder()
+            latLngs.forEach { builder.include(it) }
+            val bounds = builder.build()
             val padding = 80
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
         }
