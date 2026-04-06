@@ -72,6 +72,16 @@
             android:exported="false"
             android:foregroundServiceType="location" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.happyclaw.hikinghappy.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name="com.google.android.gms.common.api.GoogleApiActivity"
             android:exported="false"

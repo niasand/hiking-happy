@@ -188,6 +188,7 @@ com.happyclaw.hikinghappy:id/forever = 0x7f070032
 com.happyclaw.hikinghappy:id/accessibility_custom_action_9 = 0x7f070020
 com.happyclaw.hikinghappy:string/navigation_menu = 0x7f0b006e
 com.happyclaw.hikinghappy:id/hide_in_inspector_tag = 0x7f070036
+com.happyclaw.hikinghappy:xml/file_paths = 0x7f0e0000
 com.happyclaw.hikinghappy:attr/imageAspectRatio = 0x7f030018
 com.happyclaw.hikinghappy:color/common_google_signin_btn_text_dark_disabled = 0x7f04000a
 com.happyclaw.hikinghappy:id/accessibility_custom_action_7 = 0x7f07001e

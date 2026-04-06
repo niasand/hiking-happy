@@ -24,6 +24,10 @@ import com.happyclaw.hikinghappy.service.LocationSensorService;
 import com.happyclaw.hikinghappy.service.RecordingService;
 import com.happyclaw.hikinghappy.service.RecordingService_MembersInjector;
 import com.happyclaw.hikinghappy.service.SyncService;
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel;
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules;
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules_BindsModule_Binds_LazyMapKey;
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules_KeyModule_Provide_LazyMapKey;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey;
@@ -396,7 +400,7 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(3).put(InstrumentsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, InstrumentsViewModel_HiltModules.KeyModule.provide()).put(SettingsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, SettingsViewModel_HiltModules.KeyModule.provide()).put(TrendsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, TrendsViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(4).put(HistoryViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, HistoryViewModel_HiltModules.KeyModule.provide()).put(InstrumentsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, InstrumentsViewModel_HiltModules.KeyModule.provide()).put(SettingsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, SettingsViewModel_HiltModules.KeyModule.provide()).put(TrendsViewModel_HiltModules_KeyModule_Provide_LazyMapKey.lazyClassKeyName, TrendsViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -422,6 +426,8 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     private final ViewModelCImpl viewModelCImpl = this;
 
+    private Provider<HistoryViewModel> historyViewModelProvider;
+
     private Provider<InstrumentsViewModel> instrumentsViewModelProvider;
 
     private Provider<SettingsViewModel> settingsViewModelProvider;
@@ -441,14 +447,15 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
     @SuppressWarnings("unchecked")
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
-      this.instrumentsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.trendsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.historyViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
+      this.instrumentsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.trendsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(3).put(InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) instrumentsViewModelProvider)).put(SettingsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) settingsViewModelProvider)).put(TrendsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) trendsViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(4).put(HistoryViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) historyViewModelProvider)).put(InstrumentsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) instrumentsViewModelProvider)).put(SettingsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) settingsViewModelProvider)).put(TrendsViewModel_HiltModules_BindsModule_Binds_LazyMapKey.lazyClassKeyName, ((Provider) trendsViewModelProvider)).build());
     }
 
     @Override
@@ -477,13 +484,16 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel 
+          case 0: // com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel 
+          return (T) new HistoryViewModel(singletonCImpl.bindTrackRepositoryProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 1: // com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel 
           return (T) new InstrumentsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.locationSensorServiceProvider.get(), singletonCImpl.bindTrackRepositoryProvider.get());
 
-          case 1: // com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel 
+          case 2: // com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel 
           return (T) new SettingsViewModel(singletonCImpl.userPreferencesRepositoryImplProvider.get(), singletonCImpl.syncServiceProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 2: // com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel 
+          case 3: // com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel 
           return (T) new TrendsViewModel(singletonCImpl.activityRepositoryImplProvider.get(), singletonCImpl.userPreferencesRepositoryImplProvider.get());
 
           default: throw new AssertionError(id);
@@ -579,17 +589,17 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     private final SingletonCImpl singletonCImpl = this;
 
-    private Provider<UserPreferencesRepositoryImpl> userPreferencesRepositoryImplProvider;
-
-    private Provider<FusedLocationProviderClient> provideFusedLocationClientProvider;
-
-    private Provider<LocationSensorService> locationSensorServiceProvider;
-
     private Provider<HikingDatabase> provideDatabaseProvider;
 
     private Provider<TrackRepositoryImpl> trackRepositoryImplProvider;
 
     private Provider<TrackRepository> bindTrackRepositoryProvider;
+
+    private Provider<UserPreferencesRepositoryImpl> userPreferencesRepositoryImplProvider;
+
+    private Provider<FusedLocationProviderClient> provideFusedLocationClientProvider;
+
+    private Provider<LocationSensorService> locationSensorServiceProvider;
 
     private Provider<ActivityRepositoryImpl> activityRepositoryImplProvider;
 
@@ -615,12 +625,12 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
 
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
-      this.userPreferencesRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<UserPreferencesRepositoryImpl>(singletonCImpl, 0));
-      this.provideFusedLocationClientProvider = DoubleCheck.provider(new SwitchingProvider<FusedLocationProviderClient>(singletonCImpl, 2));
-      this.locationSensorServiceProvider = DoubleCheck.provider(new SwitchingProvider<LocationSensorService>(singletonCImpl, 1));
-      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<HikingDatabase>(singletonCImpl, 4));
-      this.trackRepositoryImplProvider = new SwitchingProvider<>(singletonCImpl, 3);
+      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<HikingDatabase>(singletonCImpl, 1));
+      this.trackRepositoryImplProvider = new SwitchingProvider<>(singletonCImpl, 0);
       this.bindTrackRepositoryProvider = DoubleCheck.provider((Provider) trackRepositoryImplProvider);
+      this.userPreferencesRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<UserPreferencesRepositoryImpl>(singletonCImpl, 2));
+      this.provideFusedLocationClientProvider = DoubleCheck.provider(new SwitchingProvider<FusedLocationProviderClient>(singletonCImpl, 4));
+      this.locationSensorServiceProvider = DoubleCheck.provider(new SwitchingProvider<LocationSensorService>(singletonCImpl, 3));
       this.activityRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ActivityRepositoryImpl>(singletonCImpl, 6));
       this.syncServiceProvider = DoubleCheck.provider(new SwitchingProvider<SyncService>(singletonCImpl, 5));
     }
@@ -658,20 +668,20 @@ public final class DaggerHikingApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.happyclaw.hikinghappy.data.repository.UserPreferencesRepositoryImpl 
-          return (T) new UserPreferencesRepositoryImpl(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
-
-          case 1: // com.happyclaw.hikinghappy.service.LocationSensorService 
-          return (T) new LocationSensorService(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.provideFusedLocationClientProvider.get());
-
-          case 2: // com.google.android.gms.location.FusedLocationProviderClient 
-          return (T) ServiceModule_ProvideFusedLocationClientFactory.provideFusedLocationClient(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
-
-          case 3: // com.happyclaw.hikinghappy.data.repository.TrackRepositoryImpl 
+          case 0: // com.happyclaw.hikinghappy.data.repository.TrackRepositoryImpl 
           return (T) new TrackRepositoryImpl(singletonCImpl.trackSessionDao(), singletonCImpl.trackPointDao());
 
-          case 4: // com.happyclaw.hikinghappy.data.local.HikingDatabase 
+          case 1: // com.happyclaw.hikinghappy.data.local.HikingDatabase 
           return (T) DatabaseModule_ProvideDatabaseFactory.provideDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 2: // com.happyclaw.hikinghappy.data.repository.UserPreferencesRepositoryImpl 
+          return (T) new UserPreferencesRepositoryImpl(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 3: // com.happyclaw.hikinghappy.service.LocationSensorService 
+          return (T) new LocationSensorService(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.provideFusedLocationClientProvider.get());
+
+          case 4: // com.google.android.gms.location.FusedLocationProviderClient 
+          return (T) ServiceModule_ProvideFusedLocationClientFactory.provideFusedLocationClient(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 5: // com.happyclaw.hikinghappy.service.SyncService 
           return (T) new SyncService(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.activityRepositoryImplProvider.get());

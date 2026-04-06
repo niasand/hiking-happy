@@ -73,6 +73,14 @@ class TrackRepositoryImpl @Inject constructor(
         return trackPointDao.getPointsForSession(sessionId)
     }
 
+    override suspend fun getSessionOnce(sessionId: Long): TrackSession? {
+        return trackSessionDao.getSessionByIdOnce(sessionId)
+    }
+
+    override suspend fun getPointsForSessionOnce(sessionId: Long): List<TrackPoint> {
+        return trackPointDao.getPointsForSessionOnce(sessionId)
+    }
+
     /** Haversine distance in meters */
     private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371000.0

@@ -59,3 +59,4 @@ string units
 string uploading
 string version
 style Theme.HikingHappy
+xml file_paths

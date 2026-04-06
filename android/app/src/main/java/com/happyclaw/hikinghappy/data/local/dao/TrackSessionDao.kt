@@ -20,6 +20,9 @@ interface TrackSessionDao {
     @Query("SELECT * FROM track_sessions WHERE id = :id")
     fun getSessionById(id: Long): Flow<TrackSession?>
 
+    @Query("SELECT * FROM track_sessions WHERE id = :id")
+    suspend fun getSessionByIdOnce(id: Long): TrackSession?
+
     @Query("SELECT * FROM track_sessions ORDER BY startTime DESC")
     fun getAllSessions(): Flow<List<TrackSession>>
 

@@ -4,6 +4,7 @@ import com.happyclaw.hikinghappy.di.DatabaseModule;
 import com.happyclaw.hikinghappy.di.RepositoryModule;
 import com.happyclaw.hikinghappy.di.ServiceModule;
 import com.happyclaw.hikinghappy.service.RecordingService_GeneratedInjector;
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.settings.SettingsViewModel_HiltModules;
 import com.happyclaw.hikinghappy.ui.screens.trends.TrendsViewModel_HiltModules;
@@ -165,6 +166,7 @@ public final class HikingApplication_HiltComponents {
           ViewModelCBuilderModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
+          HistoryViewModel_HiltModules.KeyModule.class,
           InstrumentsViewModel_HiltModules.KeyModule.class,
           SettingsViewModel_HiltModules.KeyModule.class,
           TrendsViewModel_HiltModules.KeyModule.class
@@ -204,6 +206,7 @@ public final class HikingApplication_HiltComponents {
   @Subcomponent(
       modules = {
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
+          HistoryViewModel_HiltModules.BindsModule.class,
           InstrumentsViewModel_HiltModules.BindsModule.class,
           SettingsViewModel_HiltModules.BindsModule.class,
           TrendsViewModel_HiltModules.BindsModule.class

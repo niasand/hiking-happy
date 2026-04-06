@@ -32,4 +32,14 @@ interface TrackRepository {
      * Observe track points for a session, ordered by timestamp ASC.
      */
     fun getPointsForSession(sessionId: Long): Flow<List<TrackPoint>>
+
+    /**
+     * Get a single session by ID (one-shot, not Flow).
+     */
+    suspend fun getSessionOnce(sessionId: Long): TrackSession?
+
+    /**
+     * Get all track points for a session (one-shot, not Flow).
+     */
+    suspend fun getPointsForSessionOnce(sessionId: Long): List<TrackPoint>
 }

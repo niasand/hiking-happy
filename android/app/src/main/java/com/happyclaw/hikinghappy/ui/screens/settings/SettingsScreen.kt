@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -53,7 +54,8 @@ import com.happyclaw.hikinghappy.ui.theme.HHColors
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onHistoryClick: () -> Unit
 ) {
     val activityType by viewModel.activityType.collectAsStateWithLifecycle()
     val location by viewModel.location.collectAsStateWithLifecycle()
@@ -113,6 +115,12 @@ fun SettingsScreen(
                 icon = Icons.Default.CloudDownload,
                 title = "Restore Data",
                 onClick = { viewModel.startRestore() }
+            )
+
+            SettingsRow(
+                icon = Icons.Default.History,
+                title = "Track History",
+                onClick = onHistoryClick
             )
 
             Spacer(modifier = Modifier.height(8.dp))

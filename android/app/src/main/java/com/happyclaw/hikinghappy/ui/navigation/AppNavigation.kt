@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.happyclaw.hikinghappy.ui.screens.instruments.InstrumentsScreen
+import com.happyclaw.hikinghappy.ui.screens.history.HistoryScreen
 import com.happyclaw.hikinghappy.ui.screens.settings.SettingsScreen
 import com.happyclaw.hikinghappy.ui.screens.trends.TrendsScreen
 
@@ -75,7 +76,40 @@ fun AppNavigation(
                 )
             }
         ) {
-            SettingsScreen(onBackClick = onNavigateBack)
+            SettingsScreen(
+                onBackClick = onNavigateBack,
+                onHistoryClick = { navController.navigate(Screen.History.route) }
+            )
+        }
+
+        composable(
+            route = Screen.History.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    tween(300)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(250)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(300)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(250)
+                )
+            }
+        ) {
+            HistoryScreen(onBackClick = onNavigateBack)
         }
     }
 }
