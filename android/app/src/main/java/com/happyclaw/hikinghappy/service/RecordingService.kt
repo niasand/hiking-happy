@@ -18,6 +18,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 
@@ -29,6 +34,7 @@ class RecordingService : Service() {
         const val ACTION_STOP_RECORDING = "com.happyclaw.hikinghappy.STOP_RECORDING"
         const val EXTRA_ACTIVITY_TYPE = "activity_type"
         const val EXTRA_LOCATION = "location"
+        private const val MIN_RECORDING_DISTANCE_M = 2.0  // Minimum 2m between recorded points
 
         var isRecording = false
             private set
@@ -56,6 +62,8 @@ class RecordingService : Service() {
     // Track recording state
     private var currentSessionId: Long = -1L
     private val trackPointBatch = CopyOnWriteArrayList<TrackPoint>()
+    private var lastRecordedLat: Double = 0.0
+    private var lastRecordedLon: Double = 0.0
 
     override fun onCreate() {
         super.onCreate()
@@ -164,6 +172,8 @@ class RecordingService : Service() {
         notificationJob?.cancel()
         flushJob?.cancel()
         trackPointBatch.clear()
+        lastRecordedLat = 0.0
+        lastRecordedLon = 0.0
 
         // Stop foreground and service
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -199,19 +209,28 @@ class RecordingService : Service() {
                 )
             }
 
-            // Add to track point batch
+            // Add to track point batch with minimum distance filter (2m)
+            // This prevents database bloat from interpolated points while keeping track smooth
             if (currentSessionId > 0) {
-                trackPointBatch.add(
-                    TrackPoint(
-                        sessionId = currentSessionId,
-                        latitude = update.latitude,
-                        longitude = update.longitude,
-                        altitude = update.altitude,
-                        speed = update.speed,
-                        accuracy = update.accuracy,
-                        timestamp = System.currentTimeMillis()
-                    )
+                val dist = distanceBetween(
+                    lastRecordedLat, lastRecordedLon,
+                    update.latitude, update.longitude
                 )
+                if (dist >= MIN_RECORDING_DISTANCE_M) {
+                    trackPointBatch.add(
+                        TrackPoint(
+                            sessionId = currentSessionId,
+                            latitude = update.latitude,
+                            longitude = update.longitude,
+                            altitude = update.altitude,
+                            speed = update.speed,
+                            accuracy = update.accuracy,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
+                    lastRecordedLat = update.latitude
+                    lastRecordedLon = update.longitude
+                }
             }
         }
     }
@@ -247,5 +266,15 @@ class RecordingService : Service() {
             stopRecording()
         }
         super.onDestroy()
+    }
+
+    /** Approximate distance in meters between two lat/lon points */
+    private fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        if (lat1 == 0.0 && lon1 == 0.0) return Double.MAX_VALUE
+        val R = 6371000.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+        return R * 2 * atan2(sqrt(a), sqrt(1 - a))
     }
 }

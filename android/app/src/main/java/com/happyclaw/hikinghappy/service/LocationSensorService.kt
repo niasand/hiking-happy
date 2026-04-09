@@ -17,6 +17,8 @@ import com.google.android.gms.location.Priority
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +33,8 @@ import kotlin.math.pow
 @Singleton
 class LocationSensorService @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val fusedLocationClient: FusedLocationProviderClient
+    private val fusedLocationClient: FusedLocationProviderClient,
+    private val movementDetector: MovementDetector
 ) {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val pressureSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE)
@@ -42,6 +45,11 @@ class LocationSensorService @Inject constructor(
     private var seaLevelPressure: Float = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
     private var isSeaLevelCalibrated = false
     private var latestPressure: Float = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
+
+    // Last two GPS fixes for interpolation
+    @Volatile private var prevGpsUpdate: GpsFix? = null
+    @Volatile private var lastGpsUpdate: GpsFix? = null
+    @Volatile private var interpolationActive = false
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -71,10 +79,27 @@ class LocationSensorService @Inject constructor(
                     .coord(LatLng(location.latitude, location.longitude))
                     .convert()
 
+                val speed = if (location.hasSpeed()) location.speed else 0f
+                val accuracy = if (location.hasAccuracy()) location.accuracy else null
+                val now = System.currentTimeMillis()
+
+                val fix = GpsFix(
+                    latitude = gcj.latitude,
+                    longitude = gcj.longitude,
+                    altitude = altitude,
+                    speed = speed,
+                    accuracy = accuracy,
+                    timestamp = now
+                )
+
+                // Shift interpolation buffers
+                prevGpsUpdate = lastGpsUpdate
+                lastGpsUpdate = fix
+
                 val update = LocationUpdate(
                     altitude = altitude,
-                    speed = if (location.hasSpeed()) location.speed else 0f,
-                    accuracy = if (location.hasAccuracy()) location.accuracy else null,
+                    speed = speed,
+                    accuracy = accuracy,
                     gpsAltitude = location.altitude,
                     hasBarometer = hasBarometer,
                     latitude = gcj.latitude,
@@ -103,33 +128,70 @@ class LocationSensorService @Inject constructor(
         @SuppressLint("MissingPermission")
         fusedLocationClient.requestLocationUpdates(locationRequest, callback, context.mainLooper)
 
+        // Start interpolation coroutine
+        val interpJob = launch(Dispatchers.Default) {
+            interpolationLoop { interpolated -> trySend(interpolated) }
+        }
+
         awaitClose {
             fusedLocationClient.removeLocationUpdates(callback)
             if (pressureSensor != null) {
                 sensorManager.unregisterListener(pressureListener)
             }
+            interpJob.cancel()
         }
     }.stateIn(scope, SharingStarted.WhileSubscribed(5000), null)
 
     /**
-     * Hypsometric formula: h = 44330 * (1 - (P/P0)^(1/5.255))
+     * Interpolation loop: when the user is moving and we have two GPS fixes,
+     * emit interpolated positions at ~200ms intervals between GPS updates.
      */
-    private fun calculateBarometricAltitude(pressure: Float): Double {
-        return 44330.0 * (1.0 - (pressure.toDouble() / seaLevelPressure.toDouble()).pow(1.0 / 5.255))
-    }
+    private suspend fun interpolationLoop(onInterpolated: (LocationUpdate) -> Unit) {
+        while (true) {
+            delay(INTERPOLATION_INTERVAL_MS)
 
-    /**
-     * Calibrate sea-level pressure using known GPS altitude and current barometric pressure.
-     * P0 = P * (1 - h/44330)^5.255
-     */
-    private fun calibrateSeaLevel(gpsAltitude: Double, pressure: Float) {
-        seaLevelPressure = pressure * ((1.0 - gpsAltitude / 44330.0).pow(5.255)).toFloat()
-        isSeaLevelCalibrated = true
+            val last = lastGpsUpdate ?: continue
+            val prev = prevGpsUpdate ?: continue
+            val now = System.currentTimeMillis()
+            val elapsed = now - last.timestamp
+
+            // Only interpolate between 200ms and 1000ms after the last GPS fix
+            if (elapsed < INTERPOLATION_INTERVAL_MS || elapsed > 1200L) continue
+            if (!movementDetector.isMoving.value) continue
+            if (last.speed < MIN_INTERPOLATION_SPEED) continue
+
+            // Time between the two GPS fixes
+            val gpsDelta = (last.timestamp - prev.timestamp).toFloat()
+            if (gpsDelta <= 0f || gpsDelta > 3000f) continue // sanity check
+
+            // Fraction of time elapsed since last GPS fix (0.0 to ~1.0)
+            val fraction = (elapsed.toFloat() / gpsDelta).coerceIn(0f, 1f)
+
+            // Linear interpolation of position
+            val lat = prev.latitude + (last.latitude - prev.latitude) * fraction
+            val lon = prev.longitude + (last.longitude - prev.longitude) * fraction
+            val alt = prev.altitude + (last.altitude - prev.altitude) * fraction
+
+            // Accuracy degrades with time since last GPS fix
+            val baseAccuracy = last.accuracy ?: 20f
+            val interpolatedAccuracy = baseAccuracy + (elapsed.toFloat() / 1000f) * ACCURACY_DECAY_PER_SEC
+
+            onInterpolated(
+                LocationUpdate(
+                    altitude = alt,
+                    speed = last.speed,
+                    accuracy = interpolatedAccuracy,
+                    gpsAltitude = alt,
+                    hasBarometer = false,
+                    latitude = lat,
+                    longitude = lon
+                )
+            )
+        }
     }
 
     fun startBarometerUpdates() {
         // Barometer is already started in the callbackFlow initialization
-        // This is called to ensure barometer is active
     }
 
     fun stopBarometerUpdates() {
@@ -147,16 +209,44 @@ class LocationSensorService @Inject constructor(
                     } else {
                         it.altitude
                     }
-                    // Re-send via the existing flow — the callbackFlow will also pick up
-                    // the regular update, but this gives an immediate response on button tap
                     scope.launch {
                         // The continuous updates already flow through locationUpdates,
                         // so this single request just ensures a quick re-center.
-                        // No need to manually emit — the FusedLocationProvider will
-                        // trigger the callback with the new location.
                     }
                 }
             }
+    }
+
+    /**
+     * Hypsometric formula: h = 44330 * (1 - (P/P0)^(1/5.255))
+     */
+    private fun calculateBarometricAltitude(pressure: Float): Double {
+        return 44330.0 * (1.0 - (pressure.toDouble() / seaLevelPressure.toDouble()).pow(1.0 / 5.255))
+    }
+
+    /**
+     * Calibrate sea-level pressure using known GPS altitude and current barometric pressure.
+     * P0 = P * (1 - h/44330)^5.255
+     */
+    private fun calibrateSeaLevel(gpsAltitude: Double, pressure: Float) {
+        seaLevelPressure = pressure * ((1.0 - gpsAltitude / 44330.0).pow(5.255)).toFloat()
+        isSeaLevelCalibrated = true
+    }
+
+    /** Internal GPS fix snapshot for interpolation */
+    private data class GpsFix(
+        val latitude: Double,
+        val longitude: Double,
+        val altitude: Double,
+        val speed: Float,
+        val accuracy: Float?,
+        val timestamp: Long
+    )
+
+    companion object {
+        private const val INTERPOLATION_INTERVAL_MS = 200L    // Emit interpolated points every 200ms
+        private const val MIN_INTERPOLATION_SPEED = 1.5f      // Only interpolate above this speed (m/s)
+        private const val ACCURACY_DECAY_PER_SEC = 5f         // Accuracy degrades 5m per second since last fix
     }
 }
 
