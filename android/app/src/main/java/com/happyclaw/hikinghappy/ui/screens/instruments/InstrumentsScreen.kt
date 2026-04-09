@@ -23,6 +23,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.PlayArrow
@@ -70,6 +72,7 @@ fun InstrumentsScreen(
         val state by viewModel.state.collectAsStateWithLifecycle()
         val trackPoints by viewModel.trackPoints.collectAsStateWithLifecycle()
         var showStopConfirm by remember { mutableStateOf(false) }
+        var isMapFullscreen by remember { mutableStateOf(false) }
 
         if (state.isGpsAcquiring && state.altitude.isNaN()) {
             Column(
@@ -160,6 +163,26 @@ fun InstrumentsScreen(
                         .clip(RoundedCornerShape(12.dp))
                 )
 
+                // Fullscreen button — top-right
+                IconButton(
+                    onClick = { isMapFullscreen = true },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 8.dp, top = 8.dp)
+                        .size(36.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Fullscreen,
+                        contentDescription = "Fullscreen",
+                        tint = HHColors.TextSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
                 // Locate button — bottom-right
                 IconButton(
                     onClick = { viewModel.refreshLocation() },
@@ -202,6 +225,65 @@ fun InstrumentsScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+
+        // Fullscreen map overlay
+        if (isMapFullscreen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .statusBarsPadding()
+            ) {
+                AmapView(
+                    latitude = state.latitude,
+                    longitude = state.longitude,
+                    hasFix = !state.altitude.isNaN() && state.gpsState != GpsSignalState.LOST,
+                    refreshTrigger = state.locationRefreshCounter,
+                    trackPoints = trackPoints,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // Exit fullscreen button — top-right
+                IconButton(
+                    onClick = { isMapFullscreen = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 12.dp, top = 12.dp)
+                        .size(40.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.FullscreenExit,
+                        contentDescription = "Exit Fullscreen",
+                        tint = HHColors.TextSecondary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                // Locate button — bottom-right in fullscreen
+                IconButton(
+                    onClick = { viewModel.refreshLocation() },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 16.dp)
+                        .size(40.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MyLocation,
+                        contentDescription = "Locate",
+                        tint = androidx.compose.ui.graphics.Color.Red,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
             }
         }
 
