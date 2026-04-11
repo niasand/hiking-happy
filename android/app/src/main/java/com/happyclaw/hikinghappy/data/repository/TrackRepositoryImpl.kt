@@ -113,7 +113,26 @@ class TrackRepositoryImpl @Inject constructor(
             )
         }
         trackPointDao.insertPoints(points)
-        finalizeSession(sessionId)
+
+        // Compute stats directly (avoid finalizeSession which may overwrite endTime via Flow timing)
+        val dbPoints = trackPointDao.getPointsForSessionOnce(sessionId)
+        var totalDistance = 0.0
+        for (i in 1 until dbPoints.size) {
+            totalDistance += haversine(
+                dbPoints[i - 1].latitude, dbPoints[i - 1].longitude,
+                dbPoints[i].latitude, dbPoints[i].longitude
+            )
+        }
+        val original = trackSessionDao.getSessionByIdOnce(sessionId) ?: return sessionId
+        val updated = original.copy(
+            totalDistance = totalDistance,
+            totalDuration = (parsedTrack.endTime - parsedTrack.startTime) / 1000L,
+            maxAltitude = dbPoints.maxOfOrNull { it.altitude } ?: 0.0,
+            minAltitude = dbPoints.minOfOrNull { it.altitude } ?: 0.0,
+            maxSpeed = dbPoints.maxOfOrNull { it.speed.toDouble() } ?: 0.0,
+            pointCount = dbPoints.size
+        )
+        trackSessionDao.update(updated)
         return sessionId
     }
 

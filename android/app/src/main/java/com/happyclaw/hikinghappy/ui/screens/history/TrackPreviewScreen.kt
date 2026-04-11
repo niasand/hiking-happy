@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +44,7 @@ fun TrackPreviewScreen(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -73,8 +76,18 @@ fun TrackPreviewScreen(
                 } ?: "Track Preview",
                 style = MaterialTheme.typography.headlineLarge,
                 color = HHColors.TextPrimary,
-                maxLines = 1
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
             )
+            if (state.points.size >= 2) {
+                IconButton(onClick = { viewModel.startNavigation(context) }) {
+                    Icon(
+                        imageVector = Icons.Default.Navigation,
+                        contentDescription = "Navigate",
+                        tint = HHColors.AccentActive
+                    )
+                }
+            }
         }
 
         if (state.isLoading) {

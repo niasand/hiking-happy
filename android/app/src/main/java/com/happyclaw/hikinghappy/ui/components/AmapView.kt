@@ -195,8 +195,8 @@ fun AmapView(
                 .anchor(0.5f, 0.5f)
         ).let { trackOverlayMarkers.add(it) }
 
-        // Direction arrows at regular intervals
-        val arrowInterval = if (trackPoints.size > 100) trackPoints.size / 15 else trackPoints.size / 5
+        // Direction arrows at regular intervals (~25 arrows for typical tracks)
+        val arrowInterval = if (trackPoints.size > 100) trackPoints.size / 25 else trackPoints.size / 5
         if (arrowInterval >= 2) {
             for (i in arrowInterval until trackPoints.size - 1 step arrowInterval) {
                 val p = trackPoints[i]
@@ -240,7 +240,7 @@ private fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Doub
     val R = 6371000.0
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lon2 - lon1)
-    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) + cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
     return R * 2 * atan2(sqrt(a), sqrt(1 - a))
 }
 
@@ -277,7 +277,7 @@ private fun createCircleBitmap(color: Int, sizePx: Float): Bitmap {
 
 /** Create a directional arrow bitmap, rotated to the given bearing (degrees, 0=North) */
 private fun createArrowBitmap(rotationDegrees: Float = 0f): Bitmap {
-    val size = 48
+    val size = 64
     val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
@@ -285,9 +285,9 @@ private fun createArrowBitmap(rotationDegrees: Float = 0f): Bitmap {
 
     val path = Path().apply {
         moveTo(size / 2f, 4f)            // Top tip
-        lineTo(size - 4f, size - 8f)     // Bottom right
-        lineTo(size / 2f, size - 16f)    // Bottom center notch
-        lineTo(4f, size - 8f)            // Bottom left
+        lineTo(size - 6f, size - 10f)    // Bottom right
+        lineTo(size / 2f, size - 22f)    // Bottom center notch
+        lineTo(6f, size - 10f)           // Bottom left
         close()
     }
 
@@ -296,9 +296,9 @@ private fun createArrowBitmap(rotationDegrees: Float = 0f): Bitmap {
         style = Paint.Style.FILL
     }
     val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#4ECB71")
+        color = Color.parseColor("#2D9C4F")
         style = Paint.Style.STROKE
-        strokeWidth = 2f
+        strokeWidth = 3f
     }
 
     canvas.drawPath(path, fillPaint)
