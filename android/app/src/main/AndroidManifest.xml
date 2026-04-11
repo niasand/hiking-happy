@@ -57,6 +57,16 @@
             android:foregroundServiceType="location"
             android:exported="false" />
 
+        <!-- Amap Navigation component Activities -->
+        <activity
+            android:name="com.amap.api.navi.AmapRouteActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.amap.api.navi.CheckPermissionsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

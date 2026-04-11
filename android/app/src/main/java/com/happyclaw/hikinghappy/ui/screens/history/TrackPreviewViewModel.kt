@@ -1,6 +1,8 @@
 package com.happyclaw.hikinghappy.ui.screens.history
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,10 +76,15 @@ class TrackPreviewViewModel @Inject constructor(
         val points = _state.value.points
         if (points.size < 2) return
 
-        val startPoi = Poi("起点", LatLng(points.first().latitude, points.first().longitude), "")
-        val endPoi = Poi("终点", LatLng(points.last().latitude, points.last().longitude), "")
-        val params = AmapNaviParams(startPoi, null, endPoi, AmapNaviType.WALK)
-        params.setUseInnerVoice(true)
-        AmapNaviPage.getInstance().showRouteActivity(context, params, null)
+        try {
+            val startPoi = Poi("起点", LatLng(points.first().latitude, points.first().longitude), "")
+            val endPoi = Poi("终点", LatLng(points.last().latitude, points.last().longitude), "")
+            val params = AmapNaviParams(startPoi, null, endPoi, AmapNaviType.WALK)
+            params.setUseInnerVoice(true)
+            AmapNaviPage.getInstance().showRouteActivity(context, params, null)
+        } catch (e: Exception) {
+            Log.e("TrackPreviewVM", "Navigation failed", e)
+            Toast.makeText(context, "导航启动失败: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 }
