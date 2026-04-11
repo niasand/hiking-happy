@@ -4,6 +4,7 @@ import android.util.Xml
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
