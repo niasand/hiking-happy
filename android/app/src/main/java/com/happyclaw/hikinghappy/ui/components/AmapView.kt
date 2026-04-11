@@ -1,6 +1,11 @@
 package com.happyclaw.hikinghappy.ui.components
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,6 +48,7 @@ fun AmapView(
     refreshTrigger: Int = 0,
     trackPoints: List<TrackPoint> = emptyList(),
     fitTrack: Boolean = false,
+    showTrackOverlay: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var mapView by remember { mutableStateOf<MapView?>(null) }
@@ -156,6 +162,58 @@ fun AmapView(
         }
     }
 
+    // Draw start/end markers and direction arrows
+    LaunchedEffect(trackPoints.size, trackPoints.lastOrNull()?.id, showTrackOverlay) {
+        val map = aMap ?: return@LaunchedEffect
+
+        // Remove previous overlay markers
+        trackOverlayMarkers.forEach { it.remove() }
+        trackOverlayMarkers.clear()
+
+        if (!showTrackOverlay || trackPoints.size < 2) return@LaunchedEffect
+
+        val first = trackPoints.first()
+        val last = trackPoints.last()
+
+        // Start marker (green)
+        val startBitmap = createCircleBitmap(Color.parseColor("#22C55E"), 36f)
+        map.addMarker(
+            MarkerOptions()
+                .position(LatLng(first.latitude, first.longitude))
+                .icon(BitmapDescriptorFactory.fromBitmap(startBitmap))
+                .title("Start")
+                .anchor(0.5f, 0.5f)
+        ).let { trackOverlayMarkers.add(it) }
+
+        // End marker (red)
+        val endBitmap = createCircleBitmap(Color.parseColor("#EF4444"), 36f)
+        map.addMarker(
+            MarkerOptions()
+                .position(LatLng(last.latitude, last.longitude))
+                .icon(BitmapDescriptorFactory.fromBitmap(endBitmap))
+                .title("End")
+                .anchor(0.5f, 0.5f)
+        ).let { trackOverlayMarkers.add(it) }
+
+        // Direction arrows at regular intervals
+        val arrowInterval = if (trackPoints.size > 100) trackPoints.size / 15 else trackPoints.size / 5
+        if (arrowInterval >= 2) {
+            for (i in arrowInterval until trackPoints.size - 1 step arrowInterval) {
+                val p = trackPoints[i]
+                val pNext = trackPoints[i + 1]
+                val bearing = bearingBetween(p.latitude, p.longitude, pNext.latitude, pNext.longitude)
+                val rotatedArrow = createArrowBitmap(bearing.toFloat())
+
+                map.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(p.latitude, p.longitude))
+                        .icon(BitmapDescriptorFactory.fromBitmap(rotatedArrow))
+                        .anchor(0.5f, 0.5f)
+                ).let { trackOverlayMarkers.add(it) }
+            }
+        }
+    }
+
     // Lifecycle
     LifecycleStartEffect(Lifecycle.State.RESUMED) {
         mapView?.onResume()
@@ -164,6 +222,8 @@ fun AmapView(
 
     DisposableEffect(Unit) {
         onDispose {
+            trackOverlayMarkers.forEach { it.remove() }
+            trackOverlayMarkers.clear()
             currentMarker = null
             currentPolyline = null
             mapView?.onDestroy()
@@ -171,12 +231,77 @@ fun AmapView(
     }
 }
 
+// Mutable list to hold overlay markers for cleanup
+private val trackOverlayMarkers = mutableListOf<Marker>()
+
 /** Approximate distance in meters between two lat/lon points */
 private fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     if (lat1 == 0.0 && lon1 == 0.0) return Double.MAX_VALUE
     val R = 6371000.0
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lon2 - lon1)
-    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) + cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
     return R * 2 * atan2(sqrt(a), sqrt(1 - a))
+}
+
+/** Bearing in degrees from point1 to point2 (0=North, 90=East) */
+private fun bearingBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val dLon = Math.toRadians(lon2 - lon1)
+    val lat1R = Math.toRadians(lat1)
+    val lat2R = Math.toRadians(lat2)
+    val y = sin(dLon) * cos(lat2R)
+    val x = cos(lat1R) * sin(lat2R) - sin(lat1R) * cos(lat2R) * cos(dLon)
+    return (Math.toDegrees(atan2(y, x)) + 360) % 360
+}
+
+/** Create a filled circle bitmap for start/end markers */
+private fun createCircleBitmap(color: Int, sizePx: Float): Bitmap {
+    val size = sizePx.toInt()
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = color
+    }
+    // White border
+    val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = Color.WHITE
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    val center = size / 2f
+    val radius = (size - 8f) / 2f
+    canvas.drawCircle(center, center, radius, paint)
+    canvas.drawCircle(center, center, radius, borderPaint)
+    return bitmap
+}
+
+/** Create a directional arrow bitmap, rotated to the given bearing (degrees, 0=North) */
+private fun createArrowBitmap(rotationDegrees: Float = 0f): Bitmap {
+    val size = 48
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+
+    canvas.rotate(rotationDegrees, size / 2f, size / 2f)
+
+    val path = Path().apply {
+        moveTo(size / 2f, 4f)            // Top tip
+        lineTo(size - 4f, size - 8f)     // Bottom right
+        lineTo(size / 2f, size - 16f)    // Bottom center notch
+        lineTo(4f, size - 8f)            // Bottom left
+        close()
+    }
+
+    val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    }
+    val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#4ECB71")
+        style = Paint.Style.STROKE
+        strokeWidth = 2f
+    }
+
+    canvas.drawPath(path, fillPaint)
+    canvas.drawPath(path, strokePaint)
+    return bitmap
 }

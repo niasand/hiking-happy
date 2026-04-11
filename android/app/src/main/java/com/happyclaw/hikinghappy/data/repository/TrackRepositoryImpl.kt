@@ -59,7 +59,7 @@ class TrackRepositoryImpl @Inject constructor(
         val maxSpeed = if (points.isEmpty()) 0.0 else points.maxOf { it.speed.toDouble() }
 
         val updated = original.copy(
-            endTime = now,
+            endTime = original.endTime ?: now,
             totalDistance = totalDistance,
             totalDuration = durationSec,
             maxAltitude = maxAltitude,
@@ -91,9 +91,11 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override suspend fun importSession(parsedTrack: ParsedTrack): Long {
+        // Build location string from start/end names, e.g. "马峦山公园 → 郊野公园北门"
+        val location = buildImportLocation(parsedTrack)
         val session = TrackSession(
             activityType = parsedTrack.activityType,
-            location = parsedTrack.location?.takeIf { it.isNotBlank() },
+            location = location,
             startTime = parsedTrack.startTime,
             endTime = parsedTrack.endTime
         )
@@ -113,6 +115,17 @@ class TrackRepositoryImpl @Inject constructor(
         trackPointDao.insertPoints(points)
         finalizeSession(sessionId)
         return sessionId
+    }
+
+    private fun buildImportLocation(parsedTrack: ParsedTrack): String? {
+        val start = parsedTrack.startLocationName?.takeIf { it.isNotBlank() }
+        val end = parsedTrack.endLocationName?.takeIf { it.isNotBlank() }
+        return when {
+            start != null && end != null && start != end -> "$start → $end"
+            start != null -> start
+            end != null -> end
+            else -> parsedTrack.location?.takeIf { it.isNotBlank() }
+        }
     }
 
     /** Haversine distance in meters */

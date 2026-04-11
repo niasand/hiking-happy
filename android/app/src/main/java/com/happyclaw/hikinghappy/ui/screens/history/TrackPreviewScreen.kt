@@ -108,6 +108,7 @@ fun TrackPreviewScreen(
                     hasFix = state.centerLat != 0.0,
                     trackPoints = state.points,
                     fitTrack = true,
+                    showTrackOverlay = true,
                     modifier = Modifier.fillMaxSize()
                 )
             }

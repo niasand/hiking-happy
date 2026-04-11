@@ -33,6 +33,8 @@ object KmlImporter {
     private fun readKml(parser: XmlPullParser): ParsedTrack {
         var name = "Imported Track"
         var location: String? = null
+        var startLocationName: String? = null
+        var endLocationName: String? = null
         val lineCoords = mutableListOf<Triple<Double, Double, Double>>()
         val extendedPoints = mutableListOf<ParsedPoint>()
         var timeSpanBegin: Long? = null
@@ -46,6 +48,8 @@ object KmlImporter {
                     val docInfo = readDocument(parser, lineCoords, extendedPoints)
                     if (docInfo.name.isNotBlank()) name = docInfo.name
                     if (docInfo.location != null) location = docInfo.location
+                    if (startLocationName == null) startLocationName = docInfo.startLocationName
+                    if (endLocationName == null) endLocationName = docInfo.endLocationName
                     if (timeSpanBegin == null) timeSpanBegin = docInfo.timeBegin
                     if (timeSpanEnd == null) timeSpanEnd = docInfo.timeEnd
                 }
@@ -53,11 +57,12 @@ object KmlImporter {
             }
         }
 
-        // Build point list: prefer individual points (2bulu), otherwise derive from LineString (HikingHappy)
-        val points = if (extendedPoints.isNotEmpty()) {
-            extendedPoints.sortedBy { it.timestamp }
-        } else if (lineCoords.isNotEmpty()) {
+        // Build point list: prefer LineString coords (actual GPS track) over individual Point elements
+        // (which may be just annotations/waypoints in 2bulu format)
+        val points = if (lineCoords.isNotEmpty()) {
             derivePointsFromCoords(lineCoords, timeSpanBegin, timeSpanEnd)
+        } else if (extendedPoints.isNotEmpty()) {
+            extendedPoints.sortedBy { it.timestamp }
         } else {
             throw IllegalArgumentException("KML contains no track data")
         }
@@ -71,13 +76,17 @@ object KmlImporter {
             location = location,
             startTime = startTime,
             endTime = endTime,
-            points = points
+            points = points,
+            startLocationName = startLocationName,
+            endLocationName = endLocationName
         )
     }
 
     private data class DocInfo(
         val name: String,
         val location: String?,
+        val startLocationName: String?,
+        val endLocationName: String?,
         val timeBegin: Long?,
         val timeEnd: Long?
     )
@@ -89,6 +98,8 @@ object KmlImporter {
     ): DocInfo {
         var name = ""
         var location: String? = null
+        var startLocationName: String? = null
+        var endLocationName: String? = null
         var timeBegin: Long? = null
         var timeEnd: Long? = null
 
@@ -107,13 +118,16 @@ object KmlImporter {
                 }
                 "ExtendedData" -> {
                     val data = readExtendedDataMap(parser)
-                    // Extract location from 2bulu metadata
-                    data["PosStartName"]?.let { if (it.isNotBlank()) location = it }
+                    data["PosStartName"]?.let { if (it.isNotBlank()) startLocationName = it }
+                    data["PosEndName"]?.let { if (it.isNotBlank()) endLocationName = it }
+                    // Extract time from 2bulu millisecond timestamps (override TimeSpan if available)
+                    data["BeginTime"]?.toLongOrNull()?.let { timeBegin = it }
+                    data["EndTime"]?.toLongOrNull()?.let { timeEnd = it }
                 }
                 else -> skip(parser)
             }
         }
-        return DocInfo(name, location, timeBegin, timeEnd)
+        return DocInfo(name, location, startLocationName, endLocationName, timeBegin, timeEnd)
     }
 
     private fun readPlacemarkOrFolder(

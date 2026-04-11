@@ -11,7 +11,9 @@ data class ParsedTrack(
     val location: String?,
     val startTime: Long,
     val endTime: Long,
-    val points: List<ParsedPoint>
+    val points: List<ParsedPoint>,
+    val startLocationName: String? = null,
+    val endLocationName: String? = null
 )
 
 data class ParsedPoint(
