@@ -1,5 +1,8 @@
 package com.happyclaw.hikinghappy.ui.screens.history
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +22,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Terrain
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,8 +34,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,15 +64,49 @@ fun HistoryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Show export messages via snackbar
-    LaunchedEffect(state.exportMessage) {
-        state.exportMessage?.let { message ->
+    val kmlPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.importKml(it) }
+    }
+
+    // Show export/delete/import messages via snackbar
+    LaunchedEffect(state.exportMessage, state.deleteMessage) {
+        val message = state.exportMessage ?: state.deleteMessage
+        if (message != null) {
             snackbarHostState.showSnackbar(
                 message = message,
                 duration = SnackbarDuration.Short
             )
             viewModel.dismissMessage()
         }
+    }
+
+    // Show import errors via snackbar
+    LaunchedEffect(state.importError) {
+        state.importError?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
+            viewModel.dismissImportError()
+        }
+    }
+
+    // Navigate to imported track preview
+    LaunchedEffect(state.importedSessionId) {
+        state.importedSessionId?.let { sessionId ->
+            viewModel.onImportNavigated()
+            onTrackClick(sessionId)
+        }
+    }
+
+    // Delete confirmation dialog
+    state.pendingDeleteSessionId?.let {
+        DeleteConfirmDialog(
+            onConfirm = { viewModel.confirmDelete() },
+            onDismiss = { viewModel.cancelDelete() }
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -95,8 +135,17 @@ fun HistoryScreen(
                 Text(
                     text = "Track History",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = HHColors.TextPrimary
+                    color = HHColors.TextPrimary,
+                    modifier = Modifier.weight(1f)
                 )
+                // Import button
+                IconButton(onClick = { kmlPicker.launch("*/*") }) {
+                    Icon(
+                        imageVector = Icons.Default.FileUpload,
+                        contentDescription = "Import KML",
+                        tint = HHColors.AccentAltitude
+                    )
+                }
             }
 
             if (state.isLoading) {
@@ -140,7 +189,8 @@ fun HistoryScreen(
                         TrackSessionRow(
                             session = session,
                             onClick = { onTrackClick(session.id) },
-                            onExportClick = { viewModel.exportSession(session.id) }
+                            onExportClick = { viewModel.exportSession(session.id) },
+                            onDeleteClick = { viewModel.requestDelete(session.id) }
                         )
                     }
                     item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -158,10 +208,33 @@ fun HistoryScreen(
 }
 
 @Composable
+private fun DeleteConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Track?") },
+        text = { Text("This track and all its data will be permanently deleted.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = HHColors.Error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
 private fun TrackSessionRow(
     session: TrackSession,
     onClick: () -> Unit,
-    onExportClick: () -> Unit
+    onExportClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     val dateFormat = SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
     val startDate = dateFormat.format(Date(session.startTime))
@@ -231,6 +304,24 @@ private fun TrackSessionRow(
                     )
                 }
             }
+
+            // Delete button
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(HHColors.SurfaceElevated)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete track",
+                    tint = HHColors.Error,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
 
             // Export button
             IconButton(

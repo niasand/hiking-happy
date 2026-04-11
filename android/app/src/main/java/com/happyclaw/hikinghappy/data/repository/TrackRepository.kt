@@ -1,5 +1,6 @@
 package com.happyclaw.hikinghappy.data.repository
 
+import com.happyclaw.hikinghappy.data.import.ParsedTrack
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
 import com.happyclaw.hikinghappy.data.local.entity.TrackPoint
 import com.happyclaw.hikinghappy.data.local.entity.TrackSession
@@ -42,4 +43,14 @@ interface TrackRepository {
      * Get all track points for a session (one-shot, not Flow).
      */
     suspend fun getPointsForSessionOnce(sessionId: Long): List<TrackPoint>
+
+    /**
+     * Delete a track session and all its points (CASCADE).
+     */
+    suspend fun deleteSession(sessionId: Long)
+
+    /**
+     * Import a parsed KML track as a new session. Returns the session ID.
+     */
+    suspend fun importSession(parsedTrack: ParsedTrack): Long
 }

@@ -1,5 +1,6 @@
 package com.happyclaw.hikinghappy.data.repository
 
+import com.happyclaw.hikinghappy.data.import.ParsedTrack
 import com.happyclaw.hikinghappy.data.local.dao.TrackPointDao
 import com.happyclaw.hikinghappy.data.local.dao.TrackSessionDao
 import com.happyclaw.hikinghappy.data.local.entity.ActivityType
@@ -38,7 +39,11 @@ class TrackRepositoryImpl @Inject constructor(
         val original = trackSessionDao.getSessionById(sessionId).first() ?: return
 
         val now = System.currentTimeMillis()
-        val durationSec = (now - original.startTime) / 1000L
+        val durationSec = if (original.endTime != null) {
+            (original.endTime!! - original.startTime) / 1000L
+        } else {
+            (now - original.startTime) / 1000L
+        }
 
         // Compute total distance using Haversine
         var totalDistance = 0.0
@@ -79,6 +84,35 @@ class TrackRepositoryImpl @Inject constructor(
 
     override suspend fun getPointsForSessionOnce(sessionId: Long): List<TrackPoint> {
         return trackPointDao.getPointsForSessionOnce(sessionId)
+    }
+
+    override suspend fun deleteSession(sessionId: Long) {
+        trackSessionDao.deleteById(sessionId) // CASCADE deletes associated TrackPoints
+    }
+
+    override suspend fun importSession(parsedTrack: ParsedTrack): Long {
+        val session = TrackSession(
+            activityType = parsedTrack.activityType,
+            location = parsedTrack.location?.takeIf { it.isNotBlank() },
+            startTime = parsedTrack.startTime,
+            endTime = parsedTrack.endTime
+        )
+        val sessionId = trackSessionDao.insert(session)
+
+        val points = parsedTrack.points.map { p ->
+            TrackPoint(
+                sessionId = sessionId,
+                latitude = p.latitude,
+                longitude = p.longitude,
+                altitude = p.altitude,
+                speed = p.speed,
+                accuracy = p.accuracy,
+                timestamp = p.timestamp
+            )
+        }
+        trackPointDao.insertPoints(points)
+        finalizeSession(sessionId)
+        return sessionId
     }
 
     /** Haversine distance in meters */
