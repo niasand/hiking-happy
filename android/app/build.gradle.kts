@@ -118,8 +118,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    // Amap Native SDK (3dmap includes location module)
-    implementation("com.amap.api:3dmap:10.0.600")
+    // Amap Navigation SDK (includes 3dmap 10.0.600)
+    implementation("com.amap.api:navi-3dmap:10.0.600_3dmap10.0.600")
 
     // Core
     implementation("androidx.core:core-ktx:1.15.0")

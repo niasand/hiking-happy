@@ -196,7 +196,7 @@ fun AmapView(
         ).let { trackOverlayMarkers.add(it) }
 
         // Direction arrows at regular intervals (~25 arrows for typical tracks)
-        val arrowInterval = if (trackPoints.size > 100) trackPoints.size / 25 else trackPoints.size / 5
+        val arrowInterval = if (trackPoints.size > 100) trackPoints.size / 50 else trackPoints.size / 3
         if (arrowInterval >= 2) {
             for (i in arrowInterval until trackPoints.size - 1 step arrowInterval) {
                 val p = trackPoints[i]
